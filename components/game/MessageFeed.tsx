@@ -17,6 +17,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { GameMessage, TransformAction } from '@/types/game';
 import { transformMessage } from '@/lib/ai/types';
 import Bloop from './Bloop';
+import { sounds } from '@/lib/audio/soundEffects';
 
 const ROLE_BADGES = {
   navigator: { bg: '#EBF5FE', text: '#1D6FB8', label: 'NAV' },
@@ -66,6 +67,7 @@ export default function MessageFeed() {
       timestamp: Date.now(),
     };
 
+    sounds.playBloopPop();
     addMessage(msg);
     setDraft('');
     showToast('Message delivered. Bridge vibes improving. ✨');
@@ -101,6 +103,8 @@ export default function MessageFeed() {
     } else {
       showToast('A little confusing? Try another explanation. 🔄');
     }
+
+    sounds.playBloopPop();
 
     // Add transformed message to feed
     const transformed: GameMessage = {

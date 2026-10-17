@@ -24,7 +24,13 @@ import {
   Home,
   CheckCircle2,
   Sparkles,
+  Volume2,
+  VolumeX,
+  HelpCircle,
+  Play,
+  X,
 } from 'lucide-react';
+import { sounds } from '@/lib/audio/soundEffects';
 
 const ROLE_TABS: { role: PlayerRole; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { role: 'navigator', label: 'Navigator', icon: Compass },
@@ -44,17 +50,82 @@ export default function GamePage() {
     resumeTimer,
     resetMission,
     startMission,
+    shareClue,
+    acknowledgeSequence,
+    activateSwitch,
     missionId,
     stats,
+    currentPlayer,
+    teamPlayers,
+    setPlayer,
+    setTeamPlayers,
   } = useGameStore();
 
   const [paused, setPaused] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const [showJudgeGuide, setShowJudgeGuide] = useState(false);
 
   useEffect(() => {
-    if (phase === 'idle' && !missionId) {
-      router.replace('/lobby');
+    setSoundOn(sounds.isEnabled());
+  }, []);
+
+  useEffect(() => {
+    if (phase === 'victory') {
+      sounds.playVictory();
     }
-  }, [phase, missionId]);
+  }, [phase]);
+
+  // Gracefully initialize session for direct visitors or page refreshes
+  useEffect(() => {
+    if (!currentPlayer) {
+      setPlayer({
+        id: 'player-phoenix',
+        displayName: 'Phoenix',
+        avatarId: 'avatar-1',
+        language: 'en',
+        commFormat: 'text',
+        highContrast: false,
+        reducedMotion: false,
+      });
+    }
+    if (!teamPlayers || teamPlayers.length === 0) {
+      setTeamPlayers([
+        {
+          id: 'player-phoenix',
+          displayName: 'Phoenix',
+          role: 'navigator',
+          language: 'en',
+          commFormat: 'text',
+          isOnline: true,
+          isSimulated: false,
+          isCurrentPlayer: true,
+        },
+        {
+          id: 'bot-zeno-3',
+          displayName: 'ZENO-3',
+          role: 'decoder',
+          language: 'en',
+          commFormat: 'text',
+          isOnline: true,
+          isSimulated: true,
+          isCurrentPlayer: false,
+        },
+        {
+          id: 'bot-bolt-9',
+          displayName: 'BOLT-9',
+          role: 'engineer',
+          language: 'en',
+          commFormat: 'text',
+          isOnline: true,
+          isSimulated: true,
+          isCurrentPlayer: false,
+        },
+      ]);
+    }
+    if (phase === 'idle' || !missionId) {
+      startMission('mission-01');
+    }
+  }, [phase, missionId, currentPlayer, teamPlayers, setPlayer, setTeamPlayers, startMission]);
 
   const handlePause = () => {
     if (paused) {
@@ -74,6 +145,18 @@ export default function GamePage() {
 
   const handleResults = () => {
     router.push('/results');
+  };
+
+  const handleQuickSolveDemo = () => {
+    sounds.playClueShare();
+    shareClue('navigator');
+    shareClue('decoder');
+    acknowledgeSequence();
+    activateSwitch('cyan');
+    activateSwitch('amber');
+    activateSwitch('violet');
+    sounds.playVictory();
+    setShowJudgeGuide(false);
   };
 
   const isTerminal = phase === 'victory' || phase === 'failure';
@@ -182,6 +265,53 @@ export default function GamePage() {
 
         {/* Right: Controls & View Report */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {/* Sound Toggle */}
+          <button
+            onClick={() => setSoundOn(sounds.toggle())}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              padding: '0.35rem 0.55rem',
+              borderRadius: 12,
+              border: '1.5px solid #E8E5DC',
+              background: '#FAF9F6',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+            title={soundOn ? 'Sound Effects Enabled (Click to Mute)' : 'Sound Effects Muted (Click to Enable)'}
+          >
+            {soundOn ? (
+              <Volume2 size={14} style={{ color: '#7866E8' }} />
+            ) : (
+              <VolumeX size={14} style={{ color: '#8E8EA8' }} />
+            )}
+          </button>
+
+          {/* Judge Quick Guide */}
+          <button
+            onClick={() => {
+              sounds.playBloopPop();
+              setShowJudgeGuide(true);
+            }}
+            className="btn-secondary"
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              padding: '0.35rem 0.65rem',
+              borderRadius: 12,
+              background: '#FFFBF0',
+              borderColor: '#FFE28A',
+              color: '#996A00',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <Sparkles size={13} /> Judge Guide
+          </button>
+
           <button
             onClick={handlePause}
             className="btn-ghost"
@@ -535,6 +665,99 @@ export default function GamePage() {
                 Resume Mission →
               </button>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── JUDGE / DEMO GUIDE MODAL ── */}
+      <AnimatePresence>
+        {showJudgeGuide && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowJudgeGuide(false)}
+            className="fixed inset-0 z-50 bg-[#252541]/45 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl border-2 border-[#E8E5DC] max-w-md w-full p-6 shadow-2xl relative"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: '#FFF6E5', color: '#995C00', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <h3 className="font-display" style={{ fontSize: '1rem', fontWeight: 900, color: '#252541' }}>
+                      Judge & Evaluator Guide
+                    </h3>
+                    <span style={{ fontSize: '0.68rem', color: '#8E8EA8', fontWeight: 600 }}>
+                      Quick cheat sheet & live demo controls
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowJudgeGuide(false)}
+                  className="btn-ghost"
+                  style={{ padding: 4, borderRadius: 8 }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Step by step puzzle explanation */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 12, background: '#EBF5FE', border: '1px solid rgba(85, 167, 247, 0.3)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Compass size={16} style={{ color: '#1D6FB8', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.72rem', color: '#252541' }}>
+                    <strong>1. Navigator Clue:</strong> True order is <em>Spiral → Sun → Wave</em>.
+                  </div>
+                </div>
+
+                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 12, background: '#F0EDFD', border: '1px solid rgba(120, 102, 232, 0.3)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <FileCode size={16} style={{ color: '#7866E8', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.72rem', color: '#252541' }}>
+                    <strong>2. Decoder Clue:</strong> <em>Spiral = Cyan</em>, <em>Sun = Amber</em>, <em>Wave = Violet</em>.
+                  </div>
+                </div>
+
+                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 12, background: '#FFF6E5', border: '1px solid rgba(229, 138, 0, 0.3)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Wrench size={16} style={{ color: '#995C00', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.72rem', color: '#252541' }}>
+                    <strong>3. Engineer Power Console:</strong> Flip <em>Cyan → Amber → Violet</em>.
+                  </div>
+                </div>
+              </div>
+
+              {/* Fast Forward One Click Test Button */}
+              <div style={{ padding: '0.85rem', borderRadius: 16, background: '#FAF9F6', border: '1.5px solid #E8E5DC', marginBottom: '1rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#252541', marginBottom: 4 }}>
+                  Short on time? Test the full victory loop!
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#8E8EA8', marginBottom: '0.75rem' }}>
+                  Automatically broadcasts both clues, acknowledges the sequence, and flips the switches to trigger the victory celebration and results report.
+                </div>
+                <button
+                  onClick={handleQuickSolveDemo}
+                  className="btn-primary"
+                  style={{ width: '100%', padding: '0.65rem 1rem', fontSize: '0.82rem', gap: '0.4rem' }}
+                >
+                  <Play size={14} fill="currentColor" /> Run Auto-Solve Demo Loop
+                </button>
+              </div>
+
+              <button
+                onClick={() => setShowJudgeGuide(false)}
+                className="btn-secondary"
+                style={{ width: '100%', padding: '0.55rem', fontSize: '0.78rem' }}
+              >
+                Close & Play Manually
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

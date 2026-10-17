@@ -7,6 +7,7 @@ import { SwitchColor } from '@/types/game';
 import RuneGlyph from './RuneGlyph';
 import Bloop from './Bloop';
 import { Check, Wrench, CheckCircle2, Zap, AlertCircle } from 'lucide-react';
+import { sounds } from '@/lib/audio/soundEffects';
 
 const SWITCHES: {
   color: SwitchColor;
@@ -65,10 +66,12 @@ export default function ControlPanel() {
   const handleSwitch = (color: SwitchColor) => {
     if (!canActivate) return;
     setLastPressed(color);
+    sounds.playSwitchClick(color);
 
     // Check if move is wrong to show gentle funny humor
     const expected = ['cyan', 'amber', 'violet'][activatedSwitches.length];
     if (color !== expected && activatedSwitches.length < 3) {
+      sounds.playSwitchWrong();
       const funnyQuotes = [
         'Zap! Not quite. The bridge remains emotionally unavailable.',
         'Almost! The bridge goblin disagrees. Try another sequence.',
@@ -76,11 +79,17 @@ export default function ControlPanel() {
       ];
       setFunnyFeedback(funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)]);
     } else {
+      sounds.playSwitchCorrect();
       setFunnyFeedback('✨ Conduit humming with energy! Nicely done.');
     }
 
     activateSwitch(color);
     setTimeout(() => setLastPressed(null), 250);
+  };
+
+  const handleAcknowledge = () => {
+    sounds.playBridgeRepaired();
+    acknowledgeSequence();
   };
 
   return (
@@ -102,7 +111,7 @@ export default function ControlPanel() {
         {/* Ready acknowledgment button */}
         {!engineerAcknowledged && (
           <button
-            onClick={acknowledgeSequence}
+            onClick={handleAcknowledge}
             className="btn-mint w-full text-xs py-2.5 mb-3 shadow-sm"
           >
             ✓ I Have the Sequence!

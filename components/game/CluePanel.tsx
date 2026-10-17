@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Lightbulb,
 } from 'lucide-react';
+import { sounds } from '@/lib/audio/soundEffects';
 
 interface CluePanelProps {
   viewingRole: PlayerRole;
@@ -74,7 +75,10 @@ export default function CluePanel({ viewingRole }: CluePanelProps) {
           </div>
 
           <button
-            onClick={() => setShowHint(true)}
+            onClick={() => {
+              sounds.playBloopPop();
+              setShowHint(true);
+            }}
             className="btn-ghost text-xs font-bold text-[#7866E8] flex items-center gap-1 px-2 py-1 rounded-xl"
             title="Ask Bloop for a hint"
           >
@@ -195,7 +199,10 @@ export default function CluePanel({ viewingRole }: CluePanelProps) {
       <div className="mt-4 pt-3 border-t border-[#E8E5DC]">
         {isNavigator && (
           <button
-            onClick={() => shareClue('navigator')}
+            onClick={() => {
+              sounds.playClueShare();
+              shareClue('navigator');
+            }}
             disabled={cluesSharedByNavigator}
             className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
               cluesSharedByNavigator
@@ -217,7 +224,10 @@ export default function CluePanel({ viewingRole }: CluePanelProps) {
 
         {isDecoder && (
           <button
-            onClick={() => shareClue('decoder')}
+            onClick={() => {
+              sounds.playClueShare();
+              shareClue('decoder');
+            }}
             disabled={cluesSharedByDecoder}
             className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
               cluesSharedByDecoder
