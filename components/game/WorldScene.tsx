@@ -3,296 +3,279 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/stores/gameStore';
-import BridgeSection from './BridgeSection';
-import RuneGlyph from './RuneGlyph';
+import Bloop, { BloopMood } from './Bloop';
 
-/**
- * WorldScene — High-Fidelity Animated Floating City Game World.
- * Displays celestial islands, energy bridges, dynamic rune spires, and energy core feedback.
- */
 export default function WorldScene() {
   const { bridge, phase, activatedSwitches } = useGameStore();
 
   const isVictory = phase === 'victory';
   const isFailure = phase === 'failure';
 
+  // Determine Bloop's mood based on progress
+  let bloopMood: BloopMood = 'thinking';
+  if (isVictory) {
+    bloopMood = 'dancing';
+  } else if (isFailure) {
+    bloopMood = 'concerned';
+  } else if (bridge.section3 === 'repaired') {
+    bloopMood = 'dancing';
+  } else if (bridge.section2 === 'repaired') {
+    bloopMood = 'proud';
+  } else if (bridge.section1 === 'glowing') {
+    bloopMood = 'excited';
+  }
+
   return (
-    <div style={{
-      width: '100%', height: '100%', position: 'relative',
-      background: 'radial-gradient(ellipse at 50% 100%, rgba(0,245,255,0.08) 0%, rgba(139,92,246,0.04) 40%, #030712 100%)',
-      borderRadius: 14,
-      overflow: 'hidden',
-      border: '1px solid rgba(255,255,255,0.08)',
-      boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)',
-    }}>
+    <div className="relative w-full h-full min-h-[220px] rounded-2xl overflow-hidden bg-gradient-to-b from-[#F0F7FF] via-[#FAF9F6] to-[#F5F2EB] border border-[#E8E5DC] select-none shadow-inner">
+      {/* Decorative Floating Clouds */}
+      <motion.div
+        animate={{ x: [-20, 20, -20] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-3 left-8 opacity-70 pointer-events-none"
+      >
+        <div className="w-20 h-7 rounded-full bg-white shadow-sm" />
+      </motion.div>
+
+      <motion.div
+        animate={{ x: [20, -20, 20] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-6 right-16 opacity-70 pointer-events-none"
+      >
+        <div className="w-28 h-8 rounded-full bg-white shadow-sm" />
+      </motion.div>
+
+      {/* Main SVG Scene */}
       <svg
-        viewBox="0 0 800 340"
-        style={{ width: '100%', height: '100%' }}
+        viewBox="0 0 800 320"
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <filter id="ws-glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="ws-glow-amber" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="ws-glow-violet" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="5" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="ws-glow-success" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="8" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-
-          <linearGradient id="ws-voidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#070c1e" />
-            <stop offset="50%" stopColor="#040713" />
-            <stop offset="100%" stopColor="#02040a" />
+          {/* Island Gradient */}
+          <linearGradient id="lushGrass" x1="0" y1="0" x2="100%" y2="0">
+            <stop offset="0%" stopColor="#9BE7C4" />
+            <stop offset="100%" stopColor="#78E0B3" />
           </linearGradient>
 
-          <linearGradient id="leftIslandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#142144" />
-            <stop offset="60%" stopColor="#0b1328" />
-            <stop offset="100%" stopColor="#060a16" />
+          <linearGradient id="purplePlateau" x1="0" y1="0" x2="100%" y2="0">
+            <stop offset="0%" stopColor="#A89CF5" />
+            <stop offset="100%" stopColor="#7866E8" />
           </linearGradient>
 
-          <linearGradient id="rightIslandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1d1936" />
-            <stop offset="60%" stopColor="#0e1022" />
-            <stop offset="100%" stopColor="#060714" />
+          <linearGradient id="rockBase" x1="0" y1="0" x2="0" y2="100%">
+            <stop offset="0%" stopColor="#DFDAD1" />
+            <stop offset="100%" stopColor="#BDB7AB" />
           </linearGradient>
 
-          <radialGradient id="nebulaGlow" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="rgba(139,92,246,0.15)" />
-            <stop offset="60%" stopColor="rgba(0,245,255,0.05)" />
-            <stop offset="100%" stopColor="transparent" />
+          {/* Cyan Glow */}
+          <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Core Glow */}
+          <radialGradient id="energyGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFE28A" stopOpacity="0.9" />
+            <stop offset="60%" stopColor="#F59E0B" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* Space Backdrop */}
-        <rect x="0" y="0" width="800" height="340" fill="url(#ws-voidGrad)" />
-        <ellipse cx="400" cy="140" rx="360" ry="120" fill="url(#nebulaGlow)" />
-
-        {/* Dynamic Starfield */}
-        {[...Array(60)].map((_, i) => (
-          <circle
-            key={i}
-            cx={(i * 71 + i * i * 3) % 800}
-            cy={(i * 43 + i * 17) % 340}
-            r={i % 8 === 0 ? 1.6 : i % 3 === 0 ? 1.1 : 0.7}
-            fill={i % 5 === 0 ? '#00f5ff' : i % 7 === 0 ? '#f59e0b' : '#ffffff'}
-            opacity={0.15 + (i % 5) * 0.15}
+        {/* ── LEFT ISLAND (Navigator & Decoder) ── */}
+        <g>
+          {/* Rock Body */}
+          <path
+            d="M 50 200 Q 150 200 240 200 Q 210 280 150 300 Q 90 280 50 200 Z"
+            fill="url(#rockBase)"
+            stroke="#9E9689"
+            strokeWidth="2.5"
           />
-        ))}
+          {/* Green Top */}
+          <ellipse cx="145" cy="200" rx="95" ry="18" fill="url(#lushGrass)" stroke="#52B687" strokeWidth="2.5" />
 
-        {/* Floating Debris / Crystalline Shards */}
-        {[...Array(8)].map((_, i) => (
-          <motion.polygon
-            key={`shard-${i}`}
-            points="0,-4 3,0 0,4 -3,0"
-            fill="rgba(0,245,255,0.3)"
-            stroke="rgba(0,245,255,0.6)"
-            strokeWidth="0.5"
-            transform={`translate(${340 + i * 18}, ${235 + (i % 3) * 12})`}
-            animate={{
-              y: [-4, 4, -4],
-              rotate: [0, 90, 180, 270, 360],
-              opacity: bridge.section1 === 'broken' ? [0.2, 0.6, 0.2] : [0.05, 0.2, 0.05],
-            }}
-            transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
+          {/* Cute foliage and crystals */}
+          <circle cx="95" cy="186" r="12" fill="#52B687" />
+          <rect x="93" y="194" width="4" height="6" fill="#7D6F5E" />
 
-        {/* Failure Atmosphere */}
-        {isFailure && (
-          <motion.rect
-            x="0" y="0" width="800" height="340"
-            fill="rgba(239,68,68,0.12)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          />
-        )}
+          <circle cx="120" cy="188" r="9" fill="#55A7F7" opacity="0.9" />
+          <rect x="118" y="194" width="3.5" height="5" fill="#7D6F5E" />
 
-        {/* ============================================================== */}
-        {/* LEFT ISLAND — THE CITADEL OF AWARENESS (Navigator & Decoder) */}
-        {/* ============================================================== */}
-        <motion.g
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          {/* Island Underglow */}
-          <ellipse cx="190" cy="274" rx="120" ry="18" fill="rgba(0,245,255,0.06)" />
+          {/* Portal Gate Frame */}
+          <path d="M 160 200 C 160 160, 200 160, 200 200" stroke="#7866E8" strokeWidth="4" strokeLinecap="round" fill="none" />
+          <ellipse cx="180" cy="180" rx="12" ry="16" fill="#F0EDFD" opacity="0.8" />
+        </g>
 
-          {/* Island Rocky Under-crag */}
-          <polygon
-            points="75,255 190,315 305,255 270,245 110,245"
-            fill="url(#leftIslandGrad)"
-            stroke="rgba(0,245,255,0.2)"
-            strokeWidth="1"
-          />
-
-          {/* Island Surface Plateaus */}
-          <ellipse cx="190" cy="254" rx="115" ry="22" fill="#0b142d" stroke="rgba(0,245,255,0.35)" strokeWidth="1.2" />
-          <ellipse cx="190" cy="244" rx="105" ry="18" fill="#101d3f" />
-
-          {/* Spires & Architectural Towers */}
-          <rect x="115" y="170" width="22" height="75" rx="3" fill="#13234d" stroke="rgba(0,245,255,0.4)" strokeWidth="1" />
-          <polygon points="115,170 126,148 137,170" fill="#00f5ff" opacity="0.3" stroke="#00f5ff" strokeWidth="1" />
-
-          <rect x="145" y="185" width="18" height="60" rx="3" fill="#0e1b3c" stroke="rgba(0,245,255,0.25)" strokeWidth="1" />
-          <rect x="172" y="160" width="28" height="85" rx="3" fill="#152755" stroke="rgba(0,245,255,0.45)" strokeWidth="1.2" />
-          <polygon points="172,160 186,138 200,160" fill="#00f5ff" opacity="0.4" stroke="#00f5ff" strokeWidth="1" />
-
-          <rect x="210" y="195" width="20" height="50" rx="3" fill="#0e1b3c" stroke="rgba(0,245,255,0.25)" strokeWidth="1" />
-          <rect x="238" y="205" width="16" height="40" rx="3" fill="#13234d" stroke="rgba(0,245,255,0.3)" strokeWidth="1" />
-
-          {/* Glowing Windows */}
-          <rect x="120" y="180" width="4" height="4" fill="#00f5ff" opacity="0.9" />
-          <rect x="128" y="180" width="4" height="4" fill="#00f5ff" opacity="0.6" />
-          <rect x="120" y="195" width="4" height="4" fill="#00f5ff" opacity="0.8" />
-          <rect x="178" y="175" width="5" height="5" fill="#00f5ff" opacity="0.9" />
-          <rect x="188" y="175" width="5" height="5" fill="#8b5cf6" opacity="0.7" />
-          <rect x="178" y="190" width="5" height="5" fill="#00f5ff" opacity="0.85" />
-          <rect x="188" y="190" width="5" height="5" fill="#00f5ff" opacity="0.5" />
-
-          {/* Bridge Anchor Pylon (Left) */}
-          <rect x="286" y="210" width="16" height="28" rx="3" fill="#152755" stroke="#00f5ff" strokeWidth="1.5" />
-          <circle cx="294" cy="224" r="4" fill="#00f5ff" filter="url(#ws-glow-cyan)" />
-        </motion.g>
-
-        {/* ============================================================== */}
-        {/* BRIDGE SECTIONS — 3 PROGRESSION STAGES */}
-        {/* ============================================================== */}
-        {/* Section 1: 300 → 400 */}
-        <BridgeSection section={1} state={bridge.section1} x1={300} y1={224} x2={400} y2={224} />
-        {/* Section 2: 400 → 500 */}
-        <BridgeSection section={2} state={bridge.section2} x1={404} y1={224} x2={496} y2={224} />
-        {/* Section 3: 500 → 600 */}
-        <BridgeSection section={3} state={bridge.section3} x1={500} y1={224} x2={596} y2={224} />
-
-        {/* Energy Conduits / Flow Sparks along Repaired Bridge */}
-        {bridge.section1 === 'repaired' && (
-          <motion.circle
-            r="3" fill="#00f5ff" filter="url(#ws-glow-cyan)"
-            animate={{ cx: [300, 400], cy: [224, 224] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-          />
-        )}
-        {bridge.section2 === 'repaired' && (
-          <motion.circle
-            r="3" fill="#8b5cf6" filter="url(#ws-glow-violet)"
-            animate={{ cx: [404, 496], cy: [224, 224] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'linear', delay: 0.4 }}
-          />
-        )}
-        {bridge.section3 === 'repaired' && (
-          <motion.circle
-            r="3.5" fill="#f59e0b" filter="url(#ws-glow-amber)"
-            animate={{ cx: [500, 596], cy: [224, 224] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'linear', delay: 0.8 }}
-          />
-        )}
-
-        {/* Void rupture indicators if broken */}
-        {bridge.section1 === 'broken' && (
-          <motion.g animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 2, repeat: Infinity }}>
-            <line x1="350" y1="210" x2="350" y2="240" stroke="rgba(0,245,255,0.4)" strokeWidth="1" strokeDasharray="3 3" />
-            <text x="350" y="205" textAnchor="middle" fontSize="10" fill="rgba(0,245,255,0.7)" fontFamily="var(--font-mono)">GAP 01</text>
-          </motion.g>
-        )}
-        {bridge.section2 === 'broken' && (
-          <motion.g animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 2.2, repeat: Infinity, delay: 0.4 }}>
-            <line x1="450" y1="210" x2="450" y2="240" stroke="rgba(139,92,246,0.4)" strokeWidth="1" strokeDasharray="3 3" />
-            <text x="450" y="205" textAnchor="middle" fontSize="10" fill="rgba(139,92,246,0.7)" fontFamily="var(--font-mono)">GAP 02</text>
-          </motion.g>
-        )}
-        {bridge.section3 === 'broken' && (
-          <motion.g animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 2.4, repeat: Infinity, delay: 0.8 }}>
-            <line x1="550" y1="210" x2="550" y2="240" stroke="rgba(245,158,11,0.4)" strokeWidth="1" strokeDasharray="3 3" />
-            <text x="550" y="205" textAnchor="middle" fontSize="10" fill="rgba(245,158,11,0.7)" fontFamily="var(--font-mono)">CORE GAP</text>
-          </motion.g>
-        )}
-
-        {/* ============================================================== */}
-        {/* RIGHT ISLAND — THE ENERGY CORE NEXUS */}
-        {/* ============================================================== */}
-        <motion.g
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-        >
-          {/* Island Underglow */}
-          <ellipse cx="640" cy="270" rx="115" ry="18" fill={isVictory ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.06)'} />
-
-          {/* Island Under-crag */}
-          <polygon
-            points="535,255 640,315 745,255 715,245 565,245"
-            fill="url(#rightIslandGrad)"
-            stroke={isVictory ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.25)'}
-            strokeWidth="1"
-          />
-
-          {/* Island Surface Plateaus */}
-          <ellipse cx="640" cy="254" rx="110" ry="22" fill="#141128" stroke={isVictory ? '#10b98150' : '#f59e0b50'} strokeWidth="1.2" />
-          <ellipse cx="640" cy="244" rx="100" ry="18" fill="#1e183a" />
-
-          {/* Bridge Anchor Pylon (Right) */}
-          <rect x="596" y="210" width="16" height="28" rx="3" fill="#1e183a" stroke={isVictory ? '#10b981' : '#f59e0b'} strokeWidth="1.5" />
-          <circle cx="604" cy="224" r="4" fill={isVictory ? '#10b981' : '#f59e0b'} filter="url(#ws-glow-amber)" />
-
-          {/* Core Pedestal Temple Structure */}
-          <polygon points="612,185 640,165 668,185 668,242 612,242" fill="#16122d" stroke={isVictory ? '#10b981' : '#f59e0b'} strokeWidth="1.5" />
-
-          {/* Central Reactor Glass Chamber */}
-          <rect x="622" y="180" width="36" height="48" rx="4" fill="rgba(0,0,0,0.6)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-
-          {/* Sacred Energy Core Orbs */}
-          {isVictory && (
-            <motion.ellipse
-              cx="640" cy="204" rx="55" ry="55"
-              fill="rgba(16,185,129,0.18)"
-              animate={{ opacity: [0.2, 0.45, 0.2], rx: [45, 60, 45], ry: [45, 60, 45] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-            />
+        {/* ── CENTRAL 3-STAGE REPAIRABLE BRIDGE ── */}
+        <g>
+          {/* SECTION 1: Discovery (Left Span, x: 235 to 350) */}
+          {bridge.section1 === 'broken' ? (
+            <g opacity="0.45">
+              <line x1="235" y1="202" x2="350" y2="202" stroke="#BDB7AB" strokeWidth="3" strokeDasharray="6 6" />
+              <rect x="238" y="198" width="22" height="7" rx="2" fill="#D3CECA" />
+              <text x="280" y="218" fill="#8E8EA8" fontSize="10" fontWeight="bold">GAP 1</text>
+            </g>
+          ) : (
+            <motion.g
+              initial={{ opacity: 0, scaleY: 0 }}
+              animate={{ opacity: 1, scaleY: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Glowing Beam */}
+              <line
+                x1="235"
+                y1="202"
+                x2="350"
+                y2="202"
+                stroke="#0FB5C4"
+                strokeWidth="5"
+                strokeLinecap="round"
+                filter="url(#cyanGlow)"
+              />
+              <rect x="250" y="197" width="24" height="8" rx="2" fill="#9BE7C4" stroke="#52B687" strokeWidth="1.5" />
+              <rect x="285" y="197" width="24" height="8" rx="2" fill="#9BE7C4" stroke="#52B687" strokeWidth="1.5" />
+              <rect x="320" y="197" width="24" height="8" rx="2" fill="#9BE7C4" stroke="#52B687" strokeWidth="1.5" />
+              {/* Particle sparks */}
+              <circle cx="290" cy="192" r="2" fill="#FFE28A" />
+              <circle cx="330" cy="190" r="2.5" fill="#55A7F7" />
+            </motion.g>
           )}
 
-          {/* Rotating Outer Gyroscope Rings */}
-          <motion.circle
-            cx="640" cy="204" r="22"
-            fill="none"
-            stroke={isVictory ? '#10b981' : '#f59e0b'}
-            strokeWidth="2"
-            strokeDasharray="6 4"
-            animate={{ rotate: 360 }}
-            transition={{ duration: isVictory ? 4 : 10, repeat: Infinity, ease: 'linear' }}
-            style={{ transformOrigin: '640px 204px' }}
-            filter="url(#ws-glow-amber)"
-          />
+          {/* SECTION 2: Understanding (Center Span, x: 350 to 465) */}
+          {bridge.section2 === 'broken' ? (
+            <g opacity="0.45">
+              <line x1="350" y1="202" x2="465" y2="202" stroke="#BDB7AB" strokeWidth="3" strokeDasharray="6 6" />
+              <text x="395" y="218" fill="#8E8EA8" fontSize="10" fontWeight="bold">GAP 2</text>
+            </g>
+          ) : (
+            <motion.g
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Purple Resonant Beam */}
+              <line
+                x1="350"
+                y1="202"
+                x2="465"
+                y2="202"
+                stroke="#7866E8"
+                strokeWidth="5"
+                strokeLinecap="round"
+                filter="url(#cyanGlow)"
+              />
+              <rect x="360" y="197" width="28" height="8" rx="2" fill="#F0EDFD" stroke="#7866E8" strokeWidth="1.5" />
+              <rect x="398" y="197" width="28" height="8" rx="2" fill="#F0EDFD" stroke="#7866E8" strokeWidth="1.5" />
+              <rect x="436" y="197" width="24" height="8" rx="2" fill="#F0EDFD" stroke="#7866E8" strokeWidth="1.5" />
+              {/* Central Keyston Crystal */}
+              <polygon points="412,192 417,202 407,202" fill="#7866E8" />
+            </motion.g>
+          )}
 
-          {/* Inner Glowing Plasma Core */}
-          <motion.circle
-            cx="640" cy="204" r="12"
-            fill={isVictory ? '#10b981' : '#f59e0b'}
-            animate={{ scale: isVictory ? [1, 1.25, 1] : [1, 1.1, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ transformOrigin: '640px 204px' }}
-            filter="url(#ws-glow-amber)"
-          />
+          {/* SECTION 3: Final Connection (Right Span, x: 465 to 570) */}
+          {bridge.section3 === 'broken' ? (
+            <g opacity="0.45">
+              <line x1="465" y1="202" x2="570" y2="202" stroke="#BDB7AB" strokeWidth="3" strokeDasharray="6 6" />
+              <rect x="540" y="198" width="24" height="7" rx="2" fill="#D3CECA" />
+              <text x="505" y="218" fill="#8E8EA8" fontSize="10" fontWeight="bold">GAP 3</text>
+            </g>
+          ) : (
+            <motion.g
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Golden Victory Energy */}
+              <line
+                x1="465"
+                y1="202"
+                x2="570"
+                y2="202"
+                stroke="#E58A00"
+                strokeWidth="6"
+                strokeLinecap="round"
+                filter="url(#cyanGlow)"
+              />
+              <rect x="475" y="197" width="24" height="8" rx="2" fill="#FFE28A" stroke="#E58A00" strokeWidth="1.5" />
+              <rect x="508" y="197" width="24" height="8" rx="2" fill="#FFE28A" stroke="#E58A00" strokeWidth="1.5" />
+              <rect x="540" y="197" width="24" height="8" rx="2" fill="#FFE28A" stroke="#E58A00" strokeWidth="1.5" />
+            </motion.g>
+          )}
+        </g>
 
-          {/* Core Symbol Status */}
-          <text
-            x="640" y="240" textAnchor="middle" fontSize="9"
-            fill={isVictory ? '#10b981' : '#f59e0b'}
-            fontFamily="var(--font-orbitron)" fontWeight="700" letterSpacing="0.1em"
+        {/* ── RIGHT ISLAND (Engineer & Energy Core) ── */}
+        <g>
+          {/* Rock Body */}
+          <path
+            d="M 560 200 Q 650 200 750 200 Q 720 280 660 300 Q 600 280 560 200 Z"
+            fill="url(#rockBase)"
+            stroke="#9E9689"
+            strokeWidth="2.5"
+          />
+          {/* Purple Plateau Top */}
+          <ellipse cx="655" cy="200" rx="95" ry="18" fill="url(#purplePlateau)" stroke="#5B4ABF" strokeWidth="2.5" />
+
+          {/* Pedestal */}
+          <rect x="645" y="184" width="24" height="16" rx="4" fill="#5C5C77" />
+
+          {/* Energy Core Sphere */}
+          <motion.g
+            animate={{
+              scale: isVictory ? [1, 1.15, 1] : [1, 1.05, 1],
+            }}
+            transition={{ repeat: Infinity, duration: isVictory ? 1 : 2.5, ease: 'easeInOut' }}
           >
-            {isVictory ? 'CORE RESTORED' : 'NEXUS OF REALITY'}
-          </text>
-        </motion.g>
+            {/* Core Halo */}
+            <circle cx="657" cy="168" r={isVictory ? 28 : 22} fill="url(#energyGlow)" />
+            {/* Core Orb */}
+            <circle
+              cx="657"
+              cy="168"
+              r={16}
+              fill={isVictory ? '#FFE28A' : isFailure ? '#FF9EAB' : '#FFE28A'}
+              stroke={isVictory ? '#D49D0A' : '#E58A00'}
+              strokeWidth="2.5"
+            />
+            <circle cx="657" cy="168" r={10} fill="#FFF9E6" />
+            <circle cx="653" cy="164" r="3.5" fill="#FFFFFF" />
+          </motion.g>
+        </g>
+
+        {/* ── ACTIVE SWITCH STATUS LIGHTS ON RIGHT ISLAND ── */}
+        <g transform="translate(620, 208)">
+          {['cyan', 'amber', 'violet'].map((c, i) => {
+            const isLit = activatedSwitches.includes(c as any);
+            const colorMap: Record<string, string> = { cyan: '#0FB5C4', amber: '#E58A00', violet: '#8B5CF6' };
+            return (
+              <circle
+                key={c}
+                cx={i * 24}
+                cy={0}
+                r={isLit ? 4.5 : 3.5}
+                fill={isLit ? colorMap[c] : '#D1CDC5'}
+                stroke={isLit ? '#252541' : '#B8B3A8'}
+                strokeWidth="1.5"
+              />
+            );
+          })}
+        </g>
       </svg>
+
+      {/* ── MASCOT BLOOP IN THE WORLD SCENE! ── */}
+      <div className="absolute bottom-6 left-[210px] sm:left-[225px] z-10 pointer-events-none">
+        <Bloop mood={bloopMood} size={64} />
+      </div>
+
+      {/* Floating Status Tag */}
+      <div className="absolute top-3 left-3 z-10">
+        <span className="badge-pill bg-white/90 border border-[#E8E5DC] text-[#252541] text-[0.7rem] shadow-sm backdrop-blur-sm">
+          {isVictory ? '🎉 Reality Rebuilt!' : bridge.section2 === 'repaired' ? '✨ Bridge Almost Complete!' : bridge.section1 === 'glowing' ? '🌟 Section 1 Connected' : '🚧 Bridge Offline'}
+        </span>
+      </div>
     </div>
   );
 }

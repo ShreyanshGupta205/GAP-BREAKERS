@@ -1,175 +1,194 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
+import Bloop from './Bloop';
 
-/**
- * FloatingCityPreview — SVG + CSS animated scene for the landing page.
- * Shows two floating islands, a broken bridge, and energy effects.
- * Pure CSS/SVG fallback — no external images required.
- */
 export default function FloatingCityPreview() {
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: 900, margin: '0 auto', height: 380 }}>
-      {/* Glow backdrop */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-        width: 600, height: 200, borderRadius: '50%',
-        background: 'radial-gradient(ellipse, rgba(0,245,255,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+    <div className="relative w-full max-w-[850px] mx-auto h-[320px] select-none overflow-visible">
+      {/* Soft pastel aura background */}
+      <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
+        <div className="w-[550px] h-[220px] rounded-full bg-gradient-to-r from-purple-100/70 via-blue-100/60 to-mint-100/50 blur-3xl" />
+      </div>
 
-      <svg viewBox="0 0 900 380" style={{ width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg">
+      {/* Floating Speech Bubbles */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: [0, -6, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-2 left-4 sm:left-12 z-20 speech-bubble"
+        style={{ borderColor: '#7866E8', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+      >
+        <span className="text-[#7866E8]">“Wait… what does that mean?”</span>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: [0, -8, 0] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+        className="absolute top-2 right-4 sm:right-16 z-20 speech-bubble"
+        style={{ borderColor: '#55A7F7', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+      >
+        <span className="text-[#1D6FB8]">“I have half the answer!”</span>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: [0, -6, 0] }}
+        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+        className="absolute bottom-4 left-6 sm:left-16 z-20 speech-bubble"
+        style={{ borderColor: '#9BE7C4', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+      >
+        <span className="text-[#1A7A4E]">“Teamwork loading…”</span>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: [0, -7, 0] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+        className="absolute bottom-4 right-6 sm:right-20 z-20 speech-bubble"
+        style={{ borderColor: '#FFE28A', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+      >
+        <span className="text-[#996A00]">“Did anyone bring a bridge?”</span>
+      </motion.div>
+
+      {/* SVG Canvas for Floating Islands and Broken Bridge */}
+      <svg
+        viewBox="0 0 850 320"
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
-          <filter id="glow-cyan">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          {/* Island 1 Gradient */}
+          <linearGradient id="islandTop1" x1="0" y1="0" x2="100%" y2="0">
+            <stop offset="0%" stopColor="#9BE7C4" />
+            <stop offset="100%" stopColor="#78E0B3" />
+          </linearGradient>
+          <linearGradient id="islandBody1" x1="0" y1="0" x2="0" y2="100%">
+            <stop offset="0%" stopColor="#E2DDD5" />
+            <stop offset="100%" stopColor="#BFB9AF" />
+          </linearGradient>
+
+          {/* Island 2 Gradient */}
+          <linearGradient id="islandTop2" x1="0" y1="0" x2="100%" y2="0">
+            <stop offset="0%" stopColor="#A89CF5" />
+            <stop offset="100%" stopColor="#7866E8" />
+          </linearGradient>
+
+          {/* Filter */}
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
-          <filter id="glow-amber">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <linearGradient id="islandGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#0f1a40" />
-            <stop offset="100%" stopColor="#070d20" />
-          </linearGradient>
-          <linearGradient id="islandGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#0d1535" />
-            <stop offset="100%" stopColor="#060c1c" />
-          </linearGradient>
-          <linearGradient id="energyBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#00f5ff" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#00f5ff" stopOpacity="0" />
-          </linearGradient>
-          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-          </radialGradient>
         </defs>
 
-        {/* Stars / particles */}
-        {[...Array(40)].map((_, i) => (
-          <circle
-            key={i}
-            cx={Math.sin(i * 137.5) * 450 + 450}
-            cy={Math.cos(i * 97.3) * 190 + 190}
-            r={i % 5 === 0 ? 1.5 : 0.8}
-            fill="white"
-            opacity={0.2 + (i % 5) * 0.1}
+        {/* Floating Clouds */}
+        <g opacity="0.8">
+          <ellipse cx="140" cy="50" rx="45" ry="16" fill="#FFFFFF" />
+          <ellipse cx="170" cy="44" rx="30" ry="20" fill="#FFFFFF" />
+          <ellipse cx="710" cy="60" rx="50" ry="18" fill="#FFFFFF" />
+          <ellipse cx="740" cy="54" rx="35" ry="22" fill="#FFFFFF" />
+        </g>
+
+        {/* ── LEFT ISLAND (Navigator & Decoder Side) ── */}
+        <g>
+          {/* Island Rock Body */}
+          <path
+            d="M 60 180 Q 160 180 270 180 Q 240 260 180 285 Q 110 275 60 180 Z"
+            fill="url(#islandBody1)"
+            stroke="#9E9689"
+            strokeWidth="2.5"
           />
-        ))}
-
-        {/* ── LEFT ISLAND ── */}
-        <motion.g animate={{ y: [0, -8, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
-          {/* Island base */}
-          <ellipse cx="230" cy="260" rx="140" ry="30" fill="url(#islandGrad1)" stroke="rgba(0,245,255,0.2)" strokeWidth="1" />
-          <ellipse cx="230" cy="255" rx="140" ry="28" fill="#0a1228" />
-          {/* Island top surface */}
-          <ellipse cx="230" cy="230" rx="130" ry="22" fill="#0d1635" stroke="rgba(0,245,255,0.15)" strokeWidth="1" />
-          {/* Buildings */}
-          <rect x="160" y="170" width="22" height="60" rx="3" fill="#0f1a40" stroke="rgba(0,245,255,0.3)" strokeWidth="1" />
-          <rect x="165" y="163" width="12" height="10" rx="2" fill="#0f1a40" stroke="rgba(0,245,255,0.2)" strokeWidth="1" />
-          <rect x="190" y="185" width="18" height="45" rx="3" fill="#0f1a40" stroke="rgba(0,245,255,0.2)" strokeWidth="1" />
-          <rect x="215" y="175" width="25" height="55" rx="3" fill="#0f1a40" stroke="rgba(0,245,255,0.25)" strokeWidth="1" />
-          <rect x="248" y="190" width="20" height="40" rx="3" fill="#0f1a40" stroke="rgba(0,245,255,0.2)" strokeWidth="1" />
-          <rect x="275" y="200" width="16" height="30" rx="3" fill="#0f1a40" stroke="rgba(0,245,255,0.15)" strokeWidth="1" />
-          {/* Window lights */}
-          <rect x="167" y="175" width="4" height="3" fill="#00f5ff" opacity="0.7" />
-          <rect x="173" y="175" width="4" height="3" fill="#00f5ff" opacity="0.5" />
-          <rect x="167" y="183" width="4" height="3" fill="#00f5ff" opacity="0.4" />
-          <rect x="219" y="180" width="5" height="4" fill="#00f5ff" opacity="0.8" />
-          <rect x="227" y="180" width="5" height="4" fill="#8b5cf6" opacity="0.7" />
-          <rect x="219" y="190" width="5" height="4" fill="#00f5ff" opacity="0.5" />
-          {/* Energy conduit on left island */}
-          <line x1="300" y1="230" x2="350" y2="228" stroke="#00f5ff" strokeWidth="2" opacity="0.6" filter="url(#glow-cyan)" />
-          <circle cx="302" cy="230" r="5" fill="none" stroke="#00f5ff" strokeWidth="1.5" opacity="0.8" />
-        </motion.g>
-
-        {/* ── BROKEN BRIDGE CENTER ── */}
-        {/* Bridge section 1 (broken) */}
-        <line x1="355" y1="228" x2="400" y2="228" stroke="#2d3748" strokeWidth="6" strokeLinecap="round" />
-        <line x1="355" y1="218" x2="395" y2="218" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" />
-        <line x1="355" y1="238" x2="395" y2="238" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" />
-
-        {/* Gap / void */}
-        <motion.g
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2.5, repeat: Infinity }}
-        >
-          <ellipse cx="450" cy="235" rx="30" ry="8" fill="rgba(139,92,246,0.15)" />
-          <text x="450" y="240" textAnchor="middle" fontSize="16" fill="rgba(139,92,246,0.6)">⚡</text>
-        </motion.g>
-
-        {/* Bridge section 2 (broken) */}
-        <line x1="500" y1="228" x2="545" y2="228" stroke="#2d3748" strokeWidth="6" strokeLinecap="round" />
-        <line x1="505" y1="218" x2="545" y2="218" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" />
-        <line x1="505" y1="238" x2="545" y2="238" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" />
-
-        {/* ── RIGHT ISLAND ── */}
-        <motion.g animate={{ y: [0, -6, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
-          {/* Island base */}
-          <ellipse cx="670" cy="260" rx="130" ry="28" fill="url(#islandGrad2)" stroke="rgba(245,158,11,0.2)" strokeWidth="1" />
-          <ellipse cx="670" cy="255" rx="130" ry="26" fill="#080e22" />
-          {/* Island top */}
-          <ellipse cx="670" cy="232" rx="120" ry="20" fill="#0c1430" stroke="rgba(245,158,11,0.15)" strokeWidth="1" />
-          {/* Energy core structure */}
-          <rect x="645" y="170" width="50" height="62" rx="6" fill="#0f1a40" stroke="rgba(245,158,11,0.4)" strokeWidth="1.5" />
-          <motion.circle
-            cx="670" cy="200" r="18"
-            fill="none" stroke="#f59e0b" strokeWidth="2"
-            animate={{ r: [18, 22, 18] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            filter="url(#glow-amber)"
+          {/* Grassy Top Plateau */}
+          <path
+            d="M 50 180 C 70 168, 140 166, 210 170 C 250 172, 280 178, 280 184 C 280 190, 240 196, 170 196 C 100 196, 50 188, 50 180 Z"
+            fill="url(#islandTop1)"
+            stroke="#52B687"
+            strokeWidth="3"
           />
-          <motion.circle
-            cx="670" cy="200" r="10"
-            fill="rgba(245,158,11,0.3)"
-            animate={{ opacity: [0.3, 0.8, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+
+          {/* Cute Foliage & Rune Monolith */}
+          <circle cx="100" cy="165" r="14" fill="#52B687" />
+          <rect x="98" y="174" width="4" height="8" rx="2" fill="#7D6F5E" />
+
+          <circle cx="130" cy="168" r="11" fill="#7866E8" opacity="0.8" />
+          <rect x="128" y="176" width="4" height="6" rx="2" fill="#7D6F5E" />
+
+          <polygon points="190,145 198,175 182,175" fill="#55A7F7" stroke="#2B7ECC" strokeWidth="2" />
+          <circle cx="190" cy="160" r="3" fill="#FFE28A" />
+
+          {/* Left Bridge Pier */}
+          <rect x="260" y="172" width="22" height="14" rx="4" fill="#74748A" stroke="#525266" strokeWidth="2" />
+          <circle cx="271" cy="170" r="4" fill="#55A7F7" filter="url(#softGlow)" />
+        </g>
+
+        {/* ── THE BROKEN BRIDGE IN THE CENTER ── */}
+        <g>
+          {/* Section 1 Planks */}
+          <rect x="284" y="174" width="38" height="10" rx="3" fill="#FFE28A" stroke="#D99B1A" strokeWidth="2" />
+          <rect x="326" y="176" width="34" height="9" rx="3" fill="#FFE28A" stroke="#D99B1A" strokeWidth="2" />
+
+          {/* Blueprint Gap Lines */}
+          <g opacity="0.7">
+            <line
+              x1="365"
+              y1="179"
+              x2="520"
+              y2="179"
+              stroke="#7866E8"
+              strokeWidth="2.5"
+              strokeDasharray="6 6"
+            />
+            <circle cx="410" cy="172" r="3" fill="#FF9EAB" />
+            <circle cx="445" cy="162" r="4" fill="#55A7F7" />
+            <circle cx="475" cy="179" r="3" fill="#FFE28A" />
+          </g>
+
+          {/* Section 3 Planks */}
+          <rect x="524" y="176" width="36" height="9" rx="3" fill="#FFE28A" stroke="#D99B1A" strokeWidth="2" />
+        </g>
+
+        {/* ── RIGHT ISLAND (Engineer & Energy Core) ── */}
+        <g>
+          {/* Island Rock Body */}
+          <path
+            d="M 550 180 Q 660 180 770 180 Q 740 260 680 290 Q 600 270 550 180 Z"
+            fill="url(#islandBody1)"
+            stroke="#9E9689"
+            strokeWidth="2.5"
           />
-          <text x="670" y="206" textAnchor="middle" fontSize="12" fill="#f59e0b" filter="url(#glow-amber)">⚡</text>
-          {/* Side buildings */}
-          <rect x="600" y="195" width="15" height="37" rx="3" fill="#0f1a40" stroke="rgba(245,158,11,0.15)" strokeWidth="1" />
-          <rect x="720" y="200" width="18" height="32" rx="3" fill="#0f1a40" stroke="rgba(245,158,11,0.15)" strokeWidth="1" />
-          <rect x="740" y="212" width="14" height="20" rx="3" fill="#0f1a40" stroke="rgba(245,158,11,0.1)" strokeWidth="1" />
-          {/* Connection point */}
-          <line x1="550" y1="228" x2="595" y2="228" stroke="#f59e0b" strokeWidth="2" opacity="0.6" filter="url(#glow-amber)" />
-          <circle cx="597" cy="228" r="5" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.8" />
-        </motion.g>
-
-        {/* Energy beam (partially broken) */}
-        <motion.line
-          x1="356" y1="228" x2="420" y2="228"
-          stroke="url(#energyBeam)"
-          strokeWidth="3"
-          animate={{ opacity: [0, 0.6, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          filter="url(#glow-cyan)"
-        />
-
-        {/* Floating particles */}
-        {[380, 420, 460, 500].map((x, i) => (
-          <motion.circle
-            key={x}
-            cx={x}
-            cy={220}
-            r={2}
-            fill="#8b5cf6"
-            animate={{ y: [-5, -20, -5], opacity: [0, 0.8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
+          {/* Purple Plateau Top */}
+          <path
+            d="M 540 180 C 560 168, 630 166, 700 170 C 740 172, 780 178, 780 184 C 780 190, 740 196, 670 196 C 600 196, 540 188, 540 180 Z"
+            fill="url(#islandTop2)"
+            stroke="#5B4ABF"
+            strokeWidth="3"
           />
-        ))}
 
-        {/* Label — BROKEN BRIDGE */}
-        <text x="450" y="285" textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.3)" letterSpacing="3" fontFamily="monospace">
-          BRIDGE FRACTURED — NEEDS REPAIR
-        </text>
+          {/* Right Bridge Pier */}
+          <rect x="548" y="172" width="22" height="14" rx="4" fill="#74748A" stroke="#525266" strokeWidth="2" />
+          <circle cx="559" cy="170" r="4" fill="#FF9EAB" filter="url(#softGlow)" />
 
-        {/* Energy core label */}
-        <text x="670" y="175" textAnchor="middle" fontSize="9" fill="rgba(245,158,11,0.6)" letterSpacing="2" fontFamily="monospace">
-          ENERGY CORE
-        </text>
+          {/* Energy Core Sphere */}
+          <circle cx="680" cy="140" r="24" fill="#FFE28A" stroke="#D99B1A" strokeWidth="3" filter="url(#softGlow)" />
+          <circle cx="680" cy="140" r="16" fill="#FFF4D0" />
+          <circle cx="674" cy="134" r="5" fill="#FFFFFF" />
+
+          {/* Pedestal */}
+          <polygon points="665,178 695,178 688,160 672,160" fill="#74748A" stroke="#525266" strokeWidth="2" />
+        </g>
       </svg>
+
+      {/* Bloop standing right at the edge of the broken bridge holding a wrench looking concerned! */}
+      <div className="absolute top-[100px] left-[310px] sm:left-[325px] z-30">
+        <Bloop mood="concerned" size={78} />
+      </div>
     </div>
   );
 }

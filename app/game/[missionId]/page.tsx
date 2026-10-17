@@ -1,59 +1,56 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/stores/gameStore';
 import { PlayerRole } from '@/types/game';
 import WorldScene from '@/components/game/WorldScene';
-import BridgeSection from '@/components/game/BridgeSection';
 import CluePanel from '@/components/game/CluePanel';
 import ControlPanel from '@/components/game/ControlPanel';
 import MessageFeed from '@/components/game/MessageFeed';
 import TeamPanel from '@/components/game/TeamPanel';
 import MissionTimer from '@/components/game/MissionTimer';
-import { Pause, RotateCcw, Eye, Zap, ChevronLeft } from 'lucide-react';
+import Bloop from '@/components/game/Bloop';
+import {
+  Pause,
+  RotateCcw,
+  Eye,
+  Zap,
+  ArrowRight,
+  Compass,
+  FileCode,
+  Wrench,
+  Home,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 
-const ROLE_LABELS: Record<PlayerRole, string> = {
-  navigator: 'NAVIGATOR',
-  decoder: 'DECODER',
-  engineer: 'ENGINEER',
-};
-
-const PHASE_LABELS: Record<string, string> = {
-  idle: 'STANDBY',
-  setup: 'BRIEFING',
-  discovery: 'PHASE 1 — DISCOVERY',
-  understanding: 'PHASE 2 — UNDERSTANDING',
-  solving: 'PHASE 3 — SOLVING',
-  victory: '✓ MISSION COMPLETE',
-  failure: '✗ MISSION FAILED',
-};
-
-const PHASE_COLORS: Record<string, string> = {
-  idle: 'var(--color-text-muted)',
-  setup: 'var(--color-text-secondary)',
-  discovery: 'var(--color-cyan)',
-  understanding: 'var(--color-violet)',
-  solving: 'var(--color-amber)',
-  victory: 'var(--color-success)',
-  failure: 'var(--color-danger)',
-};
+const ROLE_TABS: { role: PlayerRole; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+  { role: 'navigator', label: 'Navigator', icon: Compass },
+  { role: 'decoder', label: 'Decoder', icon: FileCode },
+  { role: 'engineer', label: 'Engineer', icon: Wrench },
+];
 
 export default function GamePage() {
   const router = useRouter();
   const {
-    phase, soloViewRole, setSoloViewRole, soloMode, currentPlayer,
-    bridge, timerSeconds, pauseTimer, resumeTimer, timerActive, resetMission, startMission,
-    stats, missionId,
+    phase,
+    soloViewRole,
+    setSoloViewRole,
+    soloMode,
+    bridge,
+    pauseTimer,
+    resumeTimer,
+    resetMission,
+    startMission,
+    missionId,
+    stats,
   } = useGameStore();
 
   const [paused, setPaused] = useState(false);
-  const [activeTab, setActiveTab] = useState<'intel' | 'chat' | 'team'>('intel');
-  const [showMobile, setShowMobile] = useState(false);
 
   useEffect(() => {
-    // If no mission running, redirect to lobby
     if (phase === 'idle' && !missionId) {
       router.replace('/lobby');
     }
@@ -80,136 +77,354 @@ export default function GamePage() {
   };
 
   const isTerminal = phase === 'victory' || phase === 'failure';
+  const bridgeProgressCount = [bridge.section1, bridge.section2, bridge.section3].filter(
+    (s) => s === 'repaired'
+  ).length;
 
   return (
-    <div style={{ height: '100dvh', background: 'var(--color-void)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
-      {/* ── TOP BAR ── */}
-      <header style={{
-        display: 'flex', alignItems: 'center', gap: '0.75rem',
-        padding: '0 0.75rem', height: 52, flexShrink: 0,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(5,8,22,0.9)', backdropFilter: 'blur(10px)',
-      }}>
-        {/* Mission name */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
-          <Zap size={14} color="var(--color-cyan)" />
-          <span className="font-display" style={{ fontSize: '0.7rem', letterSpacing: '0.12em', color: 'var(--color-cyan)', whiteSpace: 'nowrap' }}>
-            M01 — SAVE THE FLOATING CITY
-          </span>
-        </div>
-
-        {/* Phase */}
-        <div style={{ marginLeft: '0.5rem' }}>
-          <motion.span
-            key={phase}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-display"
-            style={{ fontSize: '0.65rem', letterSpacing: '0.1em', color: PHASE_COLORS[phase] ?? 'var(--color-text-secondary)' }}
+    <div
+      className="gb-game-layout"
+      style={{
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#FAF9F6',
+        color: '#252541',
+        overflow: 'hidden',
+        userSelect: 'none',
+      }}
+    >
+      {/* ── TOP NAVIGATION BAR ── */}
+      <header
+        className="gb-game-header"
+        style={{
+          height: 56,
+          minHeight: 56,
+          background: '#FFFFFF',
+          borderBottom: '1.5px solid #E8E5DC',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 1.25rem',
+          zIndex: 30,
+          flexShrink: 0,
+        }}
+      >
+        {/* Left: Mission branding & Bridge Dots */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              background: '#7866E8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              boxShadow: '0 2px 6px rgba(120, 102, 232, 0.3)',
+            }}
           >
-            {PHASE_LABELS[phase] ?? phase.toUpperCase()}
-          </motion.span>
+            <Zap size={16} />
+          </div>
+          <div>
+            <span
+              className="font-display"
+              style={{
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                letterSpacing: '-0.01em',
+                color: '#252541',
+                display: 'block',
+              }}
+            >
+              MISSION 01: SAVE THE FLOATING CITY
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: 2 }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#8E8EA8' }}>BRIDGE:</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: bridge.section1 !== 'broken' ? '#0FB5C4' : '#D5D1C8',
+                  }}
+                  title="Section 1: Discovery"
+                />
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: bridge.section2 === 'repaired' ? '#7866E8' : '#D5D1C8',
+                  }}
+                  title="Section 2: Understanding"
+                />
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: bridge.section3 === 'repaired' ? '#E58A00' : '#D5D1C8',
+                  }}
+                  title="Section 3: Connection"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
+        {/* Center: Mission Countdown Timer */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <MissionTimer />
+        </div>
 
-        {/* Timer */}
-        <MissionTimer />
-
-        {/* Controls */}
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <button className="btn-ghost" onClick={handlePause} style={{ padding: '0.35rem 0.6rem', fontSize: '0.7rem' }}>
-            <Pause size={12} />
-            {paused ? 'Resume' : 'Pause'}
+        {/* Right: Controls & View Report */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button
+            onClick={handlePause}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              padding: '0.35rem 0.65rem',
+              borderRadius: 12,
+              border: '1.5px solid #E8E5DC',
+              background: '#FAF9F6',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <Pause size={13} /> {paused ? 'Resume' : 'Pause'}
           </button>
-          <button className="btn-ghost" onClick={handleRestart} style={{ padding: '0.35rem 0.6rem', fontSize: '0.7rem' }}>
-            <RotateCcw size={12} /> Restart
+          <button
+            onClick={handleRestart}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              padding: '0.35rem 0.65rem',
+              borderRadius: 12,
+              border: '1.5px solid #E8E5DC',
+              background: '#FAF9F6',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <RotateCcw size={13} /> Restart
           </button>
           {isTerminal && (
             <button
-              style={{ padding: '0.35rem 0.75rem', borderRadius: 6, background: 'var(--color-cyan)', color: '#050816', fontSize: '0.7rem', fontFamily: 'var(--font-orbitron)', fontWeight: 700, border: 'none', cursor: 'pointer' }}
               onClick={handleResults}
+              className="btn-primary"
+              style={{ fontSize: '0.78rem', padding: '0.4rem 0.85rem' }}
             >
-              VIEW RESULTS
+              View Report →
             </button>
           )}
         </div>
       </header>
 
-      {/* ── PERSPECTIVE SWITCHER (Solo Mode) ── */}
+      {/* ── SOLO PERSPECTIVE SWITCHER BAR ── */}
       {soloMode && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.75rem',
-          background: 'rgba(245,158,11,0.06)', borderBottom: '1px solid rgba(245,158,11,0.15)',
-          flexShrink: 0,
-        }}>
-          <Eye size={12} color="var(--color-amber)" />
-          <span style={{ fontSize: '0.65rem', color: 'var(--color-amber)', fontFamily: 'var(--font-mono)', marginRight: '0.5rem' }}>
-            DEMO: Switch perspective
-          </span>
-          {(['navigator', 'decoder', 'engineer'] as PlayerRole[]).map((role) => (
-            <button
-              key={role}
-              onClick={() => setSoloViewRole(role)}
-              className={`perspective-tab ${soloViewRole === role ? `active-${role.slice(0, 3)}` : ''}`}
-            >
-              {ROLE_LABELS[role]}
-            </button>
-          ))}
+        <div
+          className="gb-game-subnav"
+          style={{
+            background: '#FFFBF0',
+            borderBottom: '1.5px solid #FFE28A',
+            padding: '0.4rem 1.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+            zIndex: 20,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Bloop mood="thinking" size={24} animate={false} />
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#995C00' }}>
+              SOLO DEMO MODE: Switch perspectives to test each role's view
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {ROLE_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = soloViewRole === tab.role;
+              return (
+                <button
+                  key={tab.role}
+                  onClick={() => setSoloViewRole(tab.role)}
+                  className={`perspective-tab ${isActive ? `active-${tab.role.slice(0, 3)}` : ''}`}
+                >
+                  <Icon size={13} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* ── MAIN GAME AREA ── */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', gap: '6px', padding: '6px', minHeight: 0 }}>
-
-        {/* LEFT — Team Panel (desktop) */}
-        <div style={{ width: 240, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <div className="glass" style={{ flex: 1, borderRadius: 10, padding: '0.75rem', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <TeamPanel />
-          </div>
+      {/* ── MAIN GAMEPLAY AREA ── */}
+      <div
+        className="gb-game-main"
+        style={{
+          flex: '1 1 0%',
+          display: 'flex',
+          gap: '0.75rem',
+          padding: '0.75rem',
+          minHeight: 0,
+          overflow: 'hidden',
+          background: '#FAF9F6',
+        }}
+      >
+        {/* Left: Team Panel Card */}
+        <div
+          className="gb-game-col-team card-clean"
+          style={{
+            width: 220,
+            minWidth: 220,
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0,
+            padding: '0.75rem',
+            background: '#FFFFFF',
+          }}
+        >
+          <TeamPanel />
         </div>
 
-        {/* CENTER — World + Intel/Controls */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
-          {/* World scene */}
-          <div className="glass" style={{ flex: '0 0 52%', borderRadius: 10, overflow: 'hidden', position: 'relative' }}>
+        {/* Center: World Scene + Lower Split (Clue + Controls) */}
+        <div
+          className="gb-game-col-center"
+          style={{
+            flex: '1 1 0%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            minWidth: 0,
+            overflow: 'hidden',
+          }}
+        >
+          {/* Top Half: WorldScene (Floating Island & Bridge) */}
+          <div
+            className="gb-game-world-panel card-clean"
+            style={{
+              flex: '1 1 55%',
+              minHeight: 0,
+              position: 'relative',
+              overflow: 'hidden',
+              padding: 4,
+              background: '#FFFFFF',
+            }}
+          >
             <WorldScene />
 
-            {/* Victory/Failure overlay */}
+            {/* ── VICTORY CELEBRATION OVERLAY ── */}
             <AnimatePresence>
-              {isTerminal && (
+              {phase === 'victory' && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  style={{
-                    position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'center',
-                    background: `rgba(5,8,22,${phase === 'failure' ? '0.85' : '0.7'})`,
-                    backdropFilter: 'blur(4px)',
-                  }}
+                  className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 text-center"
+                  style={{ background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(8px)' }}
                 >
-                  <div className="font-display" style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
-                    color: phase === 'victory' ? 'var(--color-success)' : 'var(--color-danger)',
-                    letterSpacing: '0.1em', textAlign: 'center', marginBottom: '0.5rem',
-                    textShadow: `0 0 30px ${phase === 'victory' ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'}`,
-                  }}>
-                    {phase === 'victory' ? '✓ CITY SAVED!' : '✗ MISSION FAILED'}
+                  <Bloop mood="dancing" size={100} className="mb-2" />
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: 999,
+                      background: '#F0FAF5',
+                      border: '1.5px solid #9BE7C4',
+                      color: '#1A7A4E',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    <Sparkles size={13} /> CELESTIAL CITY SAVED!
                   </div>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center', padding: '0 1rem' }}>
-                    {phase === 'victory'
-                      ? 'The energy core is restored. The floating city lives on.'
-                      : 'Time ran out. The city falls into the void.'}
+                  <h2 className="font-display" style={{ fontSize: '2rem', fontWeight: 900, color: '#252541', marginBottom: '0.5rem' }}>
+                    BRIDGE BUILT. FRIENDSHIP +100.
+                  </h2>
+                  <p style={{ fontSize: '0.88rem', color: '#5C5C77', maxWidth: 420, margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
+                    You brought different clues together and saved the city. Nicely done, team!
                   </p>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className="btn-primary" style={{ fontSize: '0.8rem', padding: '0.7rem 1.5rem' }} onClick={handleResults}>
-                      View Report
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <button
+                      onClick={handleResults}
+                      className="btn-primary"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1.5rem' }}
+                    >
+                      View Team Report →
                     </button>
-                    <button className="btn-secondary" style={{ fontSize: '0.8rem', padding: '0.7rem 1.5rem' }} onClick={handleRestart}>
-                      <RotateCcw size={14} /> Replay
+                    <button
+                      onClick={handleRestart}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1.25rem' }}
+                    >
+                      <RotateCcw size={15} /> Play Again
+                    </button>
+                    <button
+                      onClick={() => router.push('/')}
+                      className="btn-ghost"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1rem' }}
+                    >
+                      <Home size={15} /> Home
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* ── FAILURE ENCOURAGEMENT OVERLAY ── */}
+            <AnimatePresence>
+              {phase === 'failure' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 text-center"
+                  style={{ background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(8px)' }}
+                >
+                  <Bloop mood="concerned" size={90} className="mb-2" />
+                  <h2 className="font-display" style={{ fontSize: '1.8rem', fontWeight: 900, color: '#252541', marginBottom: '0.5rem' }}>
+                    The bridge needs another try.
+                  </h2>
+                  <p style={{ fontSize: '0.88rem', color: '#5C5C77', maxWidth: 420, margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
+                    Time ran out, but now you know where the gaps are. Teamwork is an iterative adventure!
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <button
+                      onClick={handleRestart}
+                      className="btn-primary"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1.5rem' }}
+                    >
+                      <RotateCcw size={15} /> Try Again
+                    </button>
+                    <button
+                      onClick={handleResults}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1.25rem' }}
+                    >
+                      Review What Happened
+                    </button>
+                    <button
+                      onClick={() => router.push('/lobby')}
+                      className="btn-ghost"
+                      style={{ fontSize: '0.88rem', padding: '0.75rem 1rem' }}
+                    >
+                      Return to Lobby
                     </button>
                   </div>
                 </motion.div>
@@ -217,64 +432,108 @@ export default function GamePage() {
             </AnimatePresence>
           </div>
 
-          {/* Bottom: Intel (clues) + Control panel */}
-          <div style={{ flex: 1, display: 'flex', gap: '6px', overflow: 'hidden', minHeight: 0 }}>
-            {/* Clue panel */}
-            <div className="glass" style={{ flex: 1, borderRadius: 10, padding: '0.75rem', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div className="font-display" style={{ fontSize: '0.6rem', letterSpacing: '0.12em', color: 'var(--color-text-muted)', marginBottom: '0.5rem', flexShrink: 0 }}>
-                MISSION INTELLIGENCE
-              </div>
-              <div style={{ flex: 1, overflowY: 'auto' }}>
-                <CluePanel viewingRole={soloViewRole} />
-              </div>
+          {/* Bottom Half: Clue Panel + Engineer Control Panel */}
+          <div
+            className="gb-game-bottom-split"
+            style={{
+              flex: '1 1 45%',
+              display: 'flex',
+              gap: '0.75rem',
+              minHeight: 0,
+            }}
+          >
+            {/* Clue Panel (Collectible Card) */}
+            <div
+              className="gb-game-clue-panel card-clean"
+              style={{
+                flex: '1 1 0%',
+                padding: '0.85rem',
+                background: '#FFFFFF',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <CluePanel viewingRole={soloViewRole} />
             </div>
 
-            {/* Engineer control panel — always visible in solo mode */}
-            <div className="glass" style={{ width: 240, borderRadius: 10, padding: '0.75rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-              <div className="font-display" style={{ fontSize: '0.6rem', letterSpacing: '0.12em', color: 'var(--color-text-muted)', marginBottom: '0.5rem', flexShrink: 0 }}>
-                ENGINEER CONTROLS
-              </div>
-              <div style={{ flex: 1, overflowY: 'auto' }}>
-                <ControlPanel />
-              </div>
+            {/* Engineer Power Panel */}
+            <div
+              className="gb-game-engineer-panel card-clean"
+              style={{
+                width: 290,
+                minWidth: 290,
+                flexShrink: 0,
+                padding: '0.85rem',
+                background: '#FFFFFF',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <ControlPanel />
             </div>
           </div>
         </div>
 
-        {/* RIGHT — Message Feed */}
-        <div style={{ width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <div className="glass" style={{ flex: 1, borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
-              <span className="font-display" style={{ fontSize: '0.6rem', letterSpacing: '0.12em', color: 'var(--color-text-muted)' }}>
-                COMM CHANNEL
-              </span>
-            </div>
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <MessageFeed />
-            </div>
+        {/* Right: Friendly Comm Channel */}
+        <div
+          className="gb-game-col-comm card-clean"
+          style={{
+            width: 300,
+            minWidth: 300,
+            overflow: 'hidden',
+            background: '#FFFFFF',
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              padding: '0.75rem 1rem',
+              borderBottom: '1.5px solid #E8E5DC',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#FAF9F6',
+              flexShrink: 0,
+            }}
+          >
+            <span className="font-display" style={{ fontWeight: 900, fontSize: '0.78rem', color: '#252541' }}>
+              TEAM COMM CHANNEL
+            </span>
+            <span className="badge-pill badge-blue" style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+              GEMINI AI READY
+            </span>
+          </div>
+          <div style={{ flex: '1 1 0%', minHeight: 0, overflow: 'hidden' }}>
+            <MessageFeed />
           </div>
         </div>
       </div>
 
-      {/* Pause overlay */}
+      {/* ── PAUSE OVERLAY ── */}
       <AnimatePresence>
         {paused && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed', inset: 0, zIndex: 100,
-              background: 'rgba(5,8,22,0.85)', backdropFilter: 'blur(8px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
+            className="fixed inset-0 z-50 bg-[#252541]/40 backdrop-blur-sm flex items-center justify-center p-4"
           >
-            <div style={{ textAlign: 'center' }}>
-              <div className="font-display" style={{ fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--color-cyan)', marginBottom: '0.5rem' }}>
-                PAUSED
-              </div>
-              <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem' }}>Mission timer is paused</p>
-              <button className="btn-primary" onClick={handlePause}>Resume Mission</button>
+            <div className="bg-white rounded-3xl border-2 border-[#E8E5DC] p-8 text-center max-w-sm w-full shadow-2xl">
+              <Bloop mood="thinking" size={72} className="mx-auto mb-3" />
+              <h3 className="font-display font-extrabold text-2xl text-[#252541] mb-1">
+                GAME PAUSED
+              </h3>
+              <p className="text-xs text-[#8E8EA8] mb-6">Mission timer is currently holding.</p>
+              <button
+                onClick={handlePause}
+                className="btn-primary w-full py-3 text-sm"
+              >
+                Resume Mission →
+              </button>
             </div>
           </motion.div>
         )}

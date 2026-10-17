@@ -1,25 +1,45 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Globe, Eye, HelpCircle, Loader2 } from 'lucide-react';
+import {
+  Send,
+  Sparkles,
+  Globe,
+  Zap,
+  Eye,
+  HelpCircle,
+  Loader2,
+  Bot,
+  MessageCircle,
+} from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { GameMessage, TransformAction } from '@/types/game';
 import { transformMessage } from '@/lib/ai/types';
+import Bloop from './Bloop';
 
-const ROLE_COLORS = {
-  navigator: 'var(--color-cyan)',
-  decoder: 'var(--color-violet)',
-  engineer: 'var(--color-amber)',
+const ROLE_BADGES = {
+  navigator: { bg: '#EBF5FE', text: '#1D6FB8', label: 'NAV' },
+  decoder: { bg: '#F0EDFD', text: '#7866E8', label: 'DEC' },
+  engineer: { bg: '#FFF6E5', text: '#995C00', label: 'ENG' },
 };
 
-const ROLE_LABELS = { navigator: 'NAV', decoder: 'DEC', engineer: 'ENG' };
-
 export default function MessageFeed() {
-  const { messages, addMessage, currentPlayer, soloViewRole, teamPlayers, incrementAIUsage, incrementClarifications, soloMode, phase } = useGameStore();
+  const {
+    messages,
+    addMessage,
+    currentPlayer,
+    soloViewRole,
+    teamPlayers,
+    incrementAIUsage,
+    incrementClarifications,
+    soloMode,
+    phase,
+  } = useGameStore();
+
   const [draft, setDraft] = useState('');
   const [transforming, setTransforming] = useState<string | null>(null);
-  const [expandedMsg, setExpandedMsg] = useState<string | null>(null);
+  const [toastFeedback, setToastFeedback] = useState<string | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,14 +48,19 @@ export default function MessageFeed() {
     }
   }, [messages]);
 
+  const showToast = (text: string) => {
+    setToastFeedback(text);
+    setTimeout(() => setToastFeedback(null), 3000);
+  };
+
   const handleSend = () => {
     const content = draft.trim();
     if (!content) return;
 
     const msg: GameMessage = {
-      id: crypto.randomUUID(),
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}`,
       playerId: currentPlayer?.id ?? 'solo',
-      playerName: currentPlayer?.displayName ?? (soloMode ? ROLE_LABELS[soloViewRole] : 'Player'),
+      playerName: currentPlayer?.displayName ?? (soloMode ? soloViewRole.toUpperCase() : 'Player'),
       role: soloViewRole,
       content,
       timestamp: Date.now(),
@@ -43,6 +68,7 @@ export default function MessageFeed() {
 
     addMessage(msg);
     setDraft('');
+    showToast('Message delivered. Bridge vibes improving. ✨');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -68,11 +94,19 @@ export default function MessageFeed() {
     incrementAIUsage();
     if (action === 'explain_differently') incrementClarifications();
 
+    if (action === 'translate') {
+      showToast('Translation ready. Human brain compatible. 🌐');
+    } else if (action === 'simplify') {
+      showToast('Simplified! Cognitive load reduced. 💡');
+    } else {
+      showToast('A little confusing? Try another explanation. 🔄');
+    }
+
     // Add transformed message to feed
     const transformed: GameMessage = {
-      id: crypto.randomUUID(),
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ai-${Date.now()}`,
       playerId: 'ai-transform',
-      playerName: `AI · ${action.replace('_', ' ')}`,
+      playerName: `Gemini AI · ${action.replace('_', ' ').toUpperCase()}`,
       role: soloViewRole,
       content: result.transformed,
       transformedContent: result.transformed,
@@ -87,133 +121,135 @@ export default function MessageFeed() {
   const canSend = phase !== 'victory' && phase !== 'failure';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '0' }}>
-      {/* Feed */}
+    <div className="flex flex-col h-full bg-white select-none">
+      {/* Toast Feedback Banner */}
+      <AnimatePresence>
+        {toastFeedback && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-[#F0FAF5] border-b border-[#9BE7C4] px-3 py-1.5 text-center text-xs font-bold text-[#1A7A4E] shrink-0"
+          >
+            {toastFeedback}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Messages Scroll Area */}
       <div
         ref={feedRef}
-        className="panel-scroll"
-        style={{ flex: 1, overflowY: 'auto', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+        className="flex-1 overflow-y-auto p-3 space-y-3"
       >
-        {messages.length === 0 && (
-          <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.8rem', padding: '2rem 1rem', lineHeight: 1.6 }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>💬</div>
-            Share clues with your team here. Use AI tools to translate or simplify messages.
+        {messages.length === 0 ? (
+          <div className="text-center py-8 px-4 text-[#8E8EA8]">
+            <Bloop mood="thinking" size={48} className="mx-auto mb-2 opacity-75" />
+            <p className="text-xs font-bold text-[#5C5C77] mb-1">Comm Channel Open</p>
+            <p className="text-[0.72rem] leading-relaxed">
+              Share your rune clues here. Use AI buttons to translate, simplify, or visualize messages for teammates!
+            </p>
           </div>
-        )}
-
-        <AnimatePresence>
-          {messages.map((msg) => {
+        ) : (
+          messages.map((msg) => {
             const isAI = msg.playerId === 'ai-transform';
-            const color = isAI ? 'var(--color-text-muted)' : ROLE_COLORS[msg.role];
-            const isExpanded = expandedMsg === msg.id;
+            const roleBadge = ROLE_BADGES[msg.role] || ROLE_BADGES.navigator;
 
             return (
               <motion.div
                 key={msg.id}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.25 }}
-                style={{
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: 8,
-                  background: isAI ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.25)',
-                  border: `1px solid ${isAI ? 'rgba(255,255,255,0.06)' : color + '20'}`,
-                }}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-3 rounded-2xl text-xs border ${
+                  isAI
+                    ? 'bg-[#F0EDFD]/50 border-[#7866E8]/20'
+                    : 'bg-[#FAF9F6] border-[#E8E5DC]'
+                }`}
               >
-                {/* Header row */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.3rem' }}>
-                  {!isAI && (
-                    <span className="font-mono" style={{ fontSize: '0.65rem', fontWeight: 700, color, background: color + '15', padding: '0.1rem 0.4rem', borderRadius: 3 }}>
-                      {ROLE_LABELS[msg.role]}
+                {/* Message Header */}
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    {!isAI ? (
+                      <span
+                        className="font-bold text-[0.65rem] px-1.5 py-0.5 rounded-md"
+                        style={{ background: roleBadge.bg, color: roleBadge.text }}
+                      >
+                        {roleBadge.label}
+                      </span>
+                    ) : (
+                      <span className="badge-pill badge-purple text-[0.62rem] px-1.5 py-0.5">
+                        <Bot size={10} /> AI
+                      </span>
+                    )}
+
+                    <span className="font-bold text-[#252541] truncate max-w-[120px]">
+                      {msg.playerName}
                     </span>
-                  )}
-                  {isAI && <Zap size={10} color="var(--color-text-muted)" />}
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isAI ? 'var(--color-text-muted)' : color }}>
-                    {msg.playerName}
-                  </span>
-                  <span style={{ marginLeft: 'auto', fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>
+                  </div>
+
+                  <span className="text-[0.65rem] text-[#8E8EA8]">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  {isAI && (
-                    <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.1rem 0.3rem', borderRadius: 3 }}>
-                      {msg.transformAction?.replace('_', ' ')}
-                    </span>
-                  )}
                 </div>
 
-                {/* Message content */}
-                <p style={{ fontSize: '0.82rem', color: isAI ? 'var(--color-text-secondary)' : 'var(--color-text-primary)', lineHeight: 1.55, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                {/* Message Text */}
+                <div className="text-[#252541] text-xs leading-relaxed whitespace-pre-wrap font-sans">
                   {msg.content}
-                </p>
+                </div>
 
-                {/* AI action buttons on user messages */}
+                {/* Action Buttons for User Messages */}
                 {!isAI && canSend && (
-                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                    {([
-                      { action: 'translate' as TransformAction, icon: Globe, label: 'Translate' },
-                      { action: 'simplify' as TransformAction, icon: Eye, label: 'Simplify' },
-                      { action: 'visualize' as TransformAction, icon: Zap, label: 'Visualize' },
-                      { action: 'explain_differently' as TransformAction, icon: HelpCircle, label: 'Explain' },
-                    ].map(({ action, icon: Icon, label }) => {
-                      const tid = `${msg.id}-${action}`;
-                      const busy = transforming === tid;
-                      return (
-                        <button
-                          key={action}
-                          onClick={() => !busy && handleTransform(msg.id, msg.content, action)}
-                          disabled={busy}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: '0.25rem',
-                            padding: '0.2rem 0.5rem', borderRadius: 4,
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            color: 'var(--color-text-muted)',
-                            fontSize: '0.65rem', cursor: busy ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.15s',
-                          }}
-                          onMouseEnter={(e) => { if (!busy) { (e.target as HTMLElement).style.color = 'var(--color-cyan)'; (e.target as HTMLElement).style.borderColor = 'rgba(0,245,255,0.3)'; } }}
-                          onMouseLeave={(e) => { (e.target as HTMLElement).style.color = 'var(--color-text-muted)'; (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; }}
-                        >
-                          {busy ? <Loader2 size={9} style={{ animation: 'spin 1s linear infinite' }} /> : <Icon size={9} />}
-                          {label}
-                        </button>
-                      );
-                    }))}
+                  <div className="mt-2.5 pt-2 border-t border-[#E8E5DC] flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => handleTransform(msg.id, msg.content, 'translate')}
+                      disabled={transforming !== null}
+                      className="px-2 py-1 rounded-lg bg-white border border-[#E8E5DC] text-[0.65rem] font-bold text-[#55A7F7] hover:border-[#55A7F7] flex items-center gap-1 transition-all"
+                    >
+                      <Globe size={11} /> Translate (हिंदी)
+                    </button>
+
+                    <button
+                      onClick={() => handleTransform(msg.id, msg.content, 'simplify')}
+                      disabled={transforming !== null}
+                      className="px-2 py-1 rounded-lg bg-white border border-[#E8E5DC] text-[0.65rem] font-bold text-[#7866E8] hover:border-[#7866E8] flex items-center gap-1 transition-all"
+                    >
+                      <Zap size={11} /> Simplify
+                    </button>
+
+                    <button
+                      onClick={() => handleTransform(msg.id, msg.content, 'visualize')}
+                      disabled={transforming !== null}
+                      className="px-2 py-1 rounded-lg bg-white border border-[#E8E5DC] text-[0.65rem] font-bold text-[#9BE7C4-dark] text-[#1A7A4E] hover:border-[#9BE7C4] flex items-center gap-1 transition-all"
+                    >
+                      <Eye size={11} /> Visualize
+                    </button>
                   </div>
                 )}
               </motion.div>
             );
-          })}
-        </AnimatePresence>
+          })
+        )}
       </div>
 
-      {/* Composer */}
-      <div style={{ padding: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-          <textarea
-            className="input"
-            placeholder={canSend ? 'Share a clue with your team...' : 'Mission ended'}
+      {/* Input Composer */}
+      <div className="p-2.5 border-t border-[#E8E5DC] bg-[#FAF9F6]">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
+            placeholder={canSend ? 'Send a clue or message…' : 'Mission ended'}
             disabled={!canSend}
-            rows={2}
-            style={{ flex: 1, resize: 'none', fontSize: '0.85rem', padding: '0.6rem 0.75rem' }}
+            className="flex-1 px-3 py-2 rounded-xl border border-[#E8E5DC] bg-white text-xs text-[#252541] placeholder-[#8E8EA8] focus:border-[#7866E8] outline-none"
           />
-          <motion.button
-            className="btn-cyan"
+          <button
             onClick={handleSend}
             disabled={!draft.trim() || !canSend}
-            whileHover={draft.trim() && canSend ? { scale: 1.05 } : {}}
-            whileTap={draft.trim() && canSend ? { scale: 0.95 } : {}}
-            style={{ padding: '0.6rem', flexShrink: 0, opacity: !draft.trim() || !canSend ? 0.4 : 1 }}
+            className="btn-primary text-xs p-2 rounded-xl shrink-0"
           >
-            <Send size={16} />
-          </motion.button>
+            <Send size={14} />
+          </button>
         </div>
-        <p style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '0.35rem' }}>
-          Enter to send · Select AI actions on any message
-        </p>
       </div>
     </div>
   );
