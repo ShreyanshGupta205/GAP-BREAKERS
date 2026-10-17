@@ -1,16 +1,12 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
+  experimental: {
+    // Enable server components optimizations
+  },
+  // Ensure environment variables are properly handled
+  env: {
+    // Public vars only — GEMINI_API_KEY must remain server-side only
   },
 };
 

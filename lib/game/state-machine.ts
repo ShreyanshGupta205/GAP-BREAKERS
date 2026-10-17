@@ -69,12 +69,12 @@ export function computePhase(params: {
     return { newPhase: currentPhase, changed: false };
   }
 
-  if (timerExpired && currentPhase !== 'victory') {
-    return { newPhase: 'failure', changed: currentPhase !== 'failure' };
+  if (timerExpired) {
+    return { newPhase: 'failure', changed: true };
   }
 
   if (puzzleSolved) {
-    return { newPhase: 'victory', changed: currentPhase !== 'victory' };
+    return { newPhase: 'victory', changed: true };
   }
 
   const anyClueShared = cluesSharedByNavigator || cluesSharedByDecoder;
@@ -82,13 +82,13 @@ export function computePhase(params: {
 
   if (bothCluesShared && engineerAcknowledged) {
     if (currentPhase === 'discovery' || currentPhase === 'understanding' || currentPhase === 'setup') {
-      return { newPhase: 'solving', changed: currentPhase !== 'solving' };
+      return { newPhase: 'solving', changed: true };
     }
   }
 
   if (anyClueShared && (currentPhase === 'setup' || currentPhase === 'discovery')) {
     if (bothCluesShared) {
-      return { newPhase: 'understanding', changed: currentPhase !== 'understanding' };
+      return { newPhase: 'understanding', changed: true };
     }
     return { newPhase: 'discovery', changed: currentPhase !== 'discovery' };
   }
