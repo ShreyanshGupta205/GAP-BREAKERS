@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/stores/gameStore';
 import { SwitchColor } from '@/types/game';
-import { Check } from 'lucide-react';
+import RuneGlyph from './RuneGlyph';
+import { Check, Cpu, CheckCircle2, Zap, AlertTriangle, ArrowRight } from 'lucide-react';
 
-const SWITCHES: { color: SwitchColor; label: string; hex: string; symbol: string; rune: string }[] = [
-  { color: 'cyan', label: 'CYAN', hex: '#00f5ff', symbol: '◈', rune: 'Spiral' },
-  { color: 'amber', label: 'AMBER', hex: '#f59e0b', symbol: '☀', rune: 'Sun' },
-  { color: 'violet', label: 'VIOLET', hex: '#8b5cf6', symbol: '≋', rune: 'Wave' },
+const SWITCHES: { color: SwitchColor; label: string; hex: string; type: 'spiral' | 'sun' | 'wave'; rune: string }[] = [
+  { color: 'cyan', label: 'CYAN', hex: '#00f5ff', type: 'spiral', rune: 'Spiral' },
+  { color: 'amber', label: 'AMBER', hex: '#f59e0b', type: 'sun', rune: 'Sun' },
+  { color: 'violet', label: 'VIOLET', hex: '#8b5cf6', type: 'wave', rune: 'Wave' },
 ];
 
 export default function ControlPanel() {
@@ -31,13 +32,13 @@ export default function ControlPanel() {
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: '0.5rem',
-        padding: '0.5rem 0.75rem',
+        padding: '0.55rem 0.85rem',
         background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
         borderRadius: 8, flexShrink: 0,
       }}>
-        <span>⚡</span>
-        <span className="font-display" style={{ color: 'var(--color-amber)', fontSize: '0.7rem', letterSpacing: '0.12em' }}>
-          ENGINEER CONTROL PANEL
+        <Cpu className="w-4 h-4 text-amber" />
+        <span className="font-display font-bold" style={{ color: 'var(--color-amber)', fontSize: '0.75rem', letterSpacing: '0.12em' }}>
+          ENGINEER CONDUIT SWITCHES
         </span>
       </div>
 
@@ -45,156 +46,140 @@ export default function ControlPanel() {
       {!engineerAcknowledged && (phase === 'discovery' || phase === 'understanding' || phase === 'setup') && (
         <motion.button
           className="btn-amber"
-          style={{ width: '100%', fontSize: '0.78rem', padding: '0.6rem' }}
+          style={{ width: '100%', fontSize: '0.78rem', padding: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           onClick={acknowledgeSequence}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          ✓ I Know the Sequence — Acknowledge
+          <CheckCircle2 className="w-4 h-4" />
+          <span>I Have the Sequence — Ready to Solve</span>
         </motion.button>
       )}
 
       {engineerAcknowledged && !allActivated && (
-        <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 6, fontSize: '0.78rem', color: 'var(--color-amber)' }}>
-          ⚡ Ready — activate switches in the correct order
+        <div style={{ padding: '0.55rem 0.75rem', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 6, fontSize: '0.78rem', color: 'var(--color-amber)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <Zap className="w-3.5 h-3.5 text-amber" />
+          <span>Ready — Activate switches in exact order</span>
         </div>
       )}
 
-      {/* Sequence progress */}
+      {/* Sequence progress indicator */}
       {activatedSwitches.length > 0 && (
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
           <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>SEQ:</span>
           {activatedSwitches.map((color, i) => {
             const sw = SWITCHES.find((s) => s.color === color)!;
             return (
-              <motion.div
-                key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+              <div
+                key={color}
                 style={{
-                  width: 22, height: 22, borderRadius: '50%',
-                  background: sw.hex, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.65rem', color: '#050816', fontWeight: 700,
-                  boxShadow: `0 0 8px ${sw.hex}80`,
+                  display: 'flex', alignItems: 'center', gap: '0.3rem',
+                  padding: '0.2rem 0.5rem', borderRadius: 4,
+                  background: `${sw.hex}20`, border: `1px solid ${sw.hex}60`,
+                  fontSize: '0.7rem', color: sw.hex, fontFamily: 'var(--font-mono)', fontWeight: 700
                 }}
               >
-                {i + 1}
-              </motion.div>
+                <span>{i + 1}.</span>
+                <RuneGlyph type={sw.type} size={14} glow={false} />
+                <span>{sw.label}</span>
+              </div>
             );
           })}
-          {[...Array(3 - activatedSwitches.length)].map((_, i) => (
-            <div key={i} style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} />
-          ))}
         </div>
       )}
 
-      {/* Switch buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+      {/* The 3 Physical Switches with Rich Art */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem', flex: 1 }}>
         {SWITCHES.map((sw) => {
-          const activated = activatedSwitches.includes(sw.color);
-          const activatedAt = activatedSwitches.indexOf(sw.color);
+          const isActivated = activatedSwitches.includes(sw.color);
           const isPressed = lastPressed === sw.color;
 
           return (
             <motion.button
               key={sw.color}
+              disabled={!canActivate || isActivated}
               onClick={() => handleSwitch(sw.color)}
-              disabled={!canActivate || activated}
-              whileHover={canActivate && !activated ? { scale: 1.02, x: 4 } : {}}
-              whileTap={canActivate && !activated ? { scale: 0.97 } : {}}
+              whileHover={canActivate && !isActivated ? { scale: 1.03, y: -2 } : {}}
+              whileTap={canActivate && !isActivated ? { scale: 0.96 } : {}}
               style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '0.875rem 1rem', borderRadius: 8, cursor: activated || !canActivate ? 'not-allowed' : 'pointer',
-                border: `2px solid ${activated ? sw.hex + '60' : canActivate ? sw.hex + '40' : 'rgba(255,255,255,0.08)'}`,
-                background: activated
-                  ? `rgba(${sw.color === 'cyan' ? '0,245,255' : sw.color === 'amber' ? '245,158,11' : '139,92,246'},0.15)`
-                  : isPressed ? `rgba(${sw.color === 'cyan' ? '0,245,255' : sw.color === 'amber' ? '245,158,11' : '139,92,246'},0.1)` : 'rgba(255,255,255,0.03)',
-                transition: 'all 0.15s',
-                opacity: !canActivate ? 0.5 : 1,
                 position: 'relative',
-                overflow: 'hidden',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                padding: '0.85rem 0.5rem',
+                borderRadius: 10,
+                background: isActivated
+                  ? `radial-gradient(ellipse at center, ${sw.hex}30 0%, rgba(5,8,22,0.95) 80%)`
+                  : 'radial-gradient(ellipse at center, rgba(20,30,55,0.7) 0%, rgba(6,10,24,0.9) 100%)',
+                border: `2px solid ${isActivated ? sw.hex : 'rgba(255,255,255,0.12)'}`,
+                boxShadow: isActivated
+                  ? `0 0 20px ${sw.hex}50, inset 0 0 15px ${sw.hex}25`
+                  : '0 4px 12px rgba(0,0,0,0.5)',
+                cursor: canActivate && !isActivated ? 'pointer' : 'default',
+                opacity: isActivated ? 1 : canActivate ? 0.9 : 0.5,
+                transition: 'all 0.2s ease',
               }}
             >
-              {/* Power indicator */}
-              <motion.div
-                style={{
-                  width: 14, height: 14, borderRadius: '50%',
-                  background: activated ? sw.hex : 'rgba(255,255,255,0.1)',
-                  flexShrink: 0,
-                  boxShadow: activated ? `0 0 12px ${sw.hex}, 0 0 24px ${sw.hex}60` : undefined,
-                }}
-                animate={activated ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ duration: 1, repeat: Infinity }}
-              />
+              {/* Top LED Indicator */}
+              <div style={{
+                position: 'absolute', top: 8, right: 8,
+                width: 7, height: 7, borderRadius: '50%',
+                background: isActivated ? sw.hex : '#334155',
+                boxShadow: isActivated ? `0 0 8px ${sw.hex}` : undefined,
+              }} />
 
-              <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{sw.symbol}</span>
-
-              <div style={{ flex: 1, textAlign: 'left' }}>
-                <div className="font-mono" style={{ fontSize: '0.9rem', color: activated ? sw.hex : 'var(--color-text-primary)', fontWeight: 700 }}>
-                  {sw.label}
-                </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-                  {sw.rune} Rune Energy
-                </div>
+              {/* Central Vector Rune Art */}
+              <div className="mb-2">
+                <RuneGlyph type={sw.type} size={42} animate={isActivated} glow={isActivated} />
               </div>
 
-              {activated ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--color-success)', fontSize: '0.75rem', fontWeight: 600 }}>
-                  <Check size={14} /> #{activatedAt + 1}
+              {/* Switch Label */}
+              <span className="font-display font-bold text-xs tracking-wider" style={{ color: isActivated ? sw.hex : '#ffffff' }}>
+                {sw.label}
+              </span>
+
+              {/* Sub-label */}
+              <span className="text-[10px] text-white/50 font-mono mt-0.5">
+                {sw.rune} Rune
+              </span>
+
+              {/* Status footer */}
+              {isActivated ? (
+                <div className="mt-2 flex items-center gap-1 text-[10px] font-mono text-emerald-400 font-bold">
+                  <Check className="w-3 h-3" />
+                  <span>ACTIVE</span>
                 </div>
               ) : (
-                <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>STANDBY</div>
-              )}
-
-              {/* Glow overlay when activated */}
-              {activated && (
-                <motion.div
-                  style={{
-                    position: 'absolute', inset: 0,
-                    background: `radial-gradient(ellipse at left, ${sw.hex}15, transparent 70%)`,
-                    pointerEvents: 'none',
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                />
+                <div className="mt-2 text-[10px] font-mono text-white/40">
+                  ENGAGE
+                </div>
               )}
             </motion.button>
           );
         })}
       </div>
 
-      {/* Feedback */}
+      {/* Feedback banner */}
       <AnimatePresence>
         {lastActionFeedback && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            className={lastActionFeedback.correct ? 'feedback-correct' : 'feedback-wrong'}
-            style={{ padding: '0.6rem 0.75rem', borderRadius: 8, fontSize: '0.8rem', lineHeight: 1.4 }}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              padding: '0.5rem 0.75rem', borderRadius: 6,
+              background: lastActionFeedback.correct ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+              border: `1px solid ${lastActionFeedback.correct ? '#10b98160' : '#ef444460'}`,
+              fontSize: '0.78rem',
+              color: lastActionFeedback.correct ? '#10b981' : '#ef4444',
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
+            }}
           >
-            {lastActionFeedback.message}
+            {lastActionFeedback.correct ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+            <span>{lastActionFeedback.message}</span>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Victory state */}
-      {allActivated && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{
-            padding: '0.75rem', borderRadius: 8, textAlign: 'center',
-            background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.4)',
-            color: 'var(--color-success)', fontFamily: 'var(--font-orbitron)',
-            fontSize: '0.75rem', letterSpacing: '0.1em',
-          }}
-        >
-          ✓ SEQUENCE COMPLETE — CORE RESTORED
-        </motion.div>
-      )}
     </div>
   );
 }

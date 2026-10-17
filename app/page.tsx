@@ -143,8 +143,82 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
+      {/* GDG NSUT Hackathon Spotlight: Problem Statement & The Bridge */}
+      <section style={{ position: 'relative', zIndex: 1, padding: '2rem 2rem 4rem', maxWidth: 1100, margin: '0 auto' }}>
+        <motion.div
+          className="card-glass"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          style={{
+            border: '1px solid rgba(0,245,255,0.25)',
+            background: 'radial-gradient(circle at top left, rgba(0,245,255,0.06), rgba(15,26,64,0.7) 60%)',
+            padding: '2.5rem',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className="badge badge-cyan" style={{ fontSize: '0.7rem', letterSpacing: '0.12em' }}>
+              GDG NSUT · DEVLYMPICS SHUNYA 2026
+            </div>
+            <div className="font-mono" style={{ fontSize: '0.75rem', color: 'var(--color-amber)' }}>
+              THEME: BRIDGE THE GAP
+            </div>
+          </div>
+
+          <h2 className="font-display" style={{ fontSize: 'clamp(1.3rem, 3vw, 2rem)', color: 'var(--color-text-primary)', marginBottom: '1rem' }}>
+            "Which two sides should connect, and what exists between them?"
+          </h2>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: 850, marginBottom: '2rem' }}>
+            In GAP//BREAKERS, we redefine what it means to be a bridge. Rather than a static form, the bridge is both the functional mechanism and the living visual metaphor. Three players separated by information asymmetry, language barriers, and technical roles must synthesize their mental models to literally rebuild reality.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {/* Side A */}
+            <div style={{ background: 'rgba(5,8,22,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '1.25rem' }}>
+              <div className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--color-cyan)', marginBottom: '0.5rem' }}>
+                SIDE A · ISOLATED PERSPECTIVES
+              </div>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+                Information & Role Asymmetry
+              </h4>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                The Navigator has the spatial symbol order. The Decoder has the cipher index. The Engineer has the control panel. Zero players have enough information to solve the mission alone.
+              </p>
+            </div>
+
+            {/* The Bridge */}
+            <div style={{ background: 'rgba(5,8,22,0.6)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 10, padding: '1.25rem' }}>
+              <div className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--color-amber)', marginBottom: '0.5rem' }}>
+                THE BRIDGE · ADAPTIVE AI & SYNC
+              </div>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+                On-Demand Translation & Clarity
+              </h4>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                Gemini AI dynamically translates (Hindi ↔ English), simplifies cognitive load into key steps, and generates ASCII visual schematics to turn fragmented clues into shared comprehension.
+              </p>
+            </div>
+
+            {/* Side B */}
+            <div style={{ background: 'rgba(5,8,22,0.6)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 10, padding: '1.25rem' }}>
+              <div className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--color-violet)', marginBottom: '0.5rem' }}>
+                SIDE B · SHATTERED REALITY
+              </div>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+                Dynamic 3-Stage Reconstruction
+              </h4>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                As players communicate, the shattered energy bridge reacts in real time: glowing upon first clue, repairing its center upon mutual understanding, and restoring the floating city upon resolution.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* Features */}
-      <section style={{ position: 'relative', zIndex: 1, padding: '5rem 2rem', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ position: 'relative', zIndex: 1, padding: '2rem 2rem 5rem', maxWidth: 1100, margin: '0 auto' }}>
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

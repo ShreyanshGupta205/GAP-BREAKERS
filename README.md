@@ -1,17 +1,20 @@
 # GAP//BREAKERS — Rebuild Reality
 
-> **Hackathon:** Devlympics Shunya 2026 · Challenge: Bridge the Gap  
-> **Tagline:** Different realities. One impossible mission.
+> **Hackathon:** Devlympics Shunya 2026 (GDG on Campus · NSUT)  
+> **Challenge / Theme:** **Bridge the Gap**  
+> **Tagline:** Different realities. One impossible mission.  
+> 📄 **Official Submission Deck:** See [DEVLYMPICS_SUBMISSION.md](DEVLYMPICS_SUBMISSION.md) for full rubric alignment and architecture.
 
 ## Overview
 
-GAP//BREAKERS is a multiplayer collaborative puzzle game where players with different information, languages, and communication needs must work together to repair a broken bridge and save a floating city.
+**GAP//BREAKERS** answers the hackathon's central question (*"Which two sides should be able to connect, and what could exist between them to make that possible?"*) by creating a collaborative simulation where players separated by **information asymmetry**, **language differences**, and **technical cognitive load** must bridge their mental models to literally rebuild a physical, living bridge.
 
 ### Core Mechanic
-- **Navigator** sees the rune sequence order
-- **Decoder** knows which rune maps to which color  
+- **Navigator** sees the rune sequence order (`Spiral → Sun → Wave`)
+- **Decoder** knows which rune maps to which color (`Spiral=Cyan, Sun=Amber, Wave=Violet`)  
 - **Engineer** controls the energy switches
 - Players must communicate and combine knowledge to activate: **CYAN → AMBER → VIOLET**
+- Gemini AI provides dynamic on-demand translation (Hindi ↔ English), simplification, ASCII visual diagramming, and conceptual explanations.
 
 ---
 
