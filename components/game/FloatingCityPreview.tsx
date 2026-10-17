@@ -6,57 +6,146 @@ import Bloop from './Bloop';
 
 export default function FloatingCityPreview() {
   return (
-    <div className="relative w-full max-w-[850px] mx-auto h-[320px] select-none overflow-visible">
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: 880,
+        margin: '0 auto',
+        height: 340,
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #F9F8FD 100%)',
+        borderRadius: 28,
+        border: '2px solid #E8E5DC',
+        boxShadow: '0 16px 40px rgba(37, 37, 65, 0.06)',
+        padding: '1rem',
+        overflow: 'hidden',
+        userSelect: 'none',
+      }}
+    >
       {/* Soft pastel aura background */}
-      <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
-        <div className="w-[550px] h-[220px] rounded-full bg-gradient-to-r from-purple-100/70 via-blue-100/60 to-mint-100/50 blur-3xl" />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      >
+        <div
+          style={{
+            width: 500,
+            height: 180,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(120, 102, 232, 0.12) 0%, rgba(85, 167, 247, 0.08) 50%, rgba(155, 231, 196, 0.05) 100%)',
+            filter: 'blur(30px)',
+          }}
+        />
       </div>
 
-      {/* Floating Speech Bubbles */}
+      {/* Floating Speech Bubbles - 4 Corners */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: [0, -6, 0] }}
+        animate={{ opacity: 1, y: [0, -5, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-2 left-4 sm:left-12 z-20 speech-bubble"
-        style={{ borderColor: '#7866E8', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+        style={{
+          position: 'absolute',
+          top: 16,
+          left: 20,
+          zIndex: 20,
+          background: '#FFFFFF',
+          border: '1.5px solid #7866E8',
+          borderRadius: 16,
+          padding: '0.4rem 0.85rem',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          boxShadow: '0 4px 14px rgba(120, 102, 232, 0.12)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          whiteSpace: 'nowrap',
+        }}
       >
-        <span className="text-[#7866E8]">“Wait… what does that mean?”</span>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: [0, -8, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
-        className="absolute top-2 right-4 sm:right-16 z-20 speech-bubble"
-        style={{ borderColor: '#55A7F7', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
-      >
-        <span className="text-[#1D6FB8]">“I have half the answer!”</span>
+        <span style={{ color: '#7866E8' }}>“Wait… what does that mean?”</span>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: [0, -6, 0] }}
-        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-        className="absolute bottom-4 left-6 sm:left-16 z-20 speech-bubble"
-        style={{ borderColor: '#9BE7C4', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+        style={{
+          position: 'absolute',
+          top: 16,
+          right: 20,
+          zIndex: 20,
+          background: '#FFFFFF',
+          border: '1.5px solid #55A7F7',
+          borderRadius: 16,
+          padding: '0.4rem 0.85rem',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          boxShadow: '0 4px 14px rgba(85, 167, 247, 0.12)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          whiteSpace: 'nowrap',
+        }}
       >
-        <span className="text-[#1A7A4E]">“Teamwork loading…”</span>
+        <span style={{ color: '#1D6FB8' }}>“I have half the answer!”</span>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: [0, -7, 0] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
-        className="absolute bottom-4 right-6 sm:right-20 z-20 speech-bubble"
-        style={{ borderColor: '#FFE28A', display: 'inline-flex', width: 'auto', maxWidth: 'max-content' }}
+        animate={{ opacity: 1, y: [0, -5, 0] }}
+        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+        style={{
+          position: 'absolute',
+          bottom: 16,
+          left: 20,
+          zIndex: 20,
+          background: '#FFFFFF',
+          border: '1.5px solid #9BE7C4',
+          borderRadius: 16,
+          padding: '0.4rem 0.85rem',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          boxShadow: '0 4px 14px rgba(155, 231, 196, 0.15)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          whiteSpace: 'nowrap',
+        }}
       >
-        <span className="text-[#996A00]">“Did anyone bring a bridge?”</span>
+        <span style={{ color: '#1A7A4E' }}>“Teamwork loading…”</span>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: [0, -6, 0] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+        style={{
+          position: 'absolute',
+          bottom: 16,
+          right: 20,
+          zIndex: 20,
+          background: '#FFFFFF',
+          border: '1.5px solid #FFE28A',
+          borderRadius: 16,
+          padding: '0.4rem 0.85rem',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          boxShadow: '0 4px 14px rgba(255, 226, 138, 0.2)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <span style={{ color: '#996A00' }}>“Did anyone bring a bridge?”</span>
       </motion.div>
 
       {/* SVG Canvas for Floating Islands and Broken Bridge */}
       <svg
         viewBox="0 0 850 320"
-        className="w-full h-full"
+        style={{ width: '100%', height: '100%', display: 'block', position: 'relative', zIndex: 10 }}
         preserveAspectRatio="xMidYMid meet"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

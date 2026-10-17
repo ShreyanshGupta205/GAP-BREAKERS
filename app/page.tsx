@@ -9,7 +9,6 @@ import {
   Brain,
   Layers,
   ArrowRight,
-  Info,
   Play,
   Heart,
   HelpCircle,
@@ -17,6 +16,7 @@ import {
   Compass,
   FileCode,
   Wrench,
+  CheckCircle2,
 } from 'lucide-react';
 import FloatingCityPreview from '@/components/game/FloatingCityPreview';
 import Bloop from '@/components/game/Bloop';
@@ -26,48 +26,93 @@ export default function LandingPage() {
   const [showHow, setShowHow] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#FAF9F6] text-[#252541] overflow-x-hidden selection:bg-[#7866E8] selection:text-white">
+    <main
+      style={{
+        minHeight: '100vh',
+        background: '#FAF9F6',
+        color: '#252541',
+        overflowX: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       {/* ── TOP NAVBAR ── */}
-      <nav className="sticky top-0 z-40 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E8E5DC] px-4 sm:px-8 py-3.5 transition-all">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <nav
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          background: 'rgba(250, 249, 246, 0.92)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1.5px solid #E8E5DC',
+          padding: '0.75rem 1.5rem',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1040,
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           {/* Logo with Tiny Bridge Symbol */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
-            <div className="w-9 h-9 rounded-xl bg-[#7866E8] flex items-center justify-center text-white shadow-sm shadow-[#7866E8]/30">
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+            onClick={() => router.push('/')}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: '#7866E8',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                boxShadow: '0 3px 10px rgba(120, 102, 232, 0.3)',
+              }}
+            >
               {/* Mini Bridge Icon */}
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M4 18 C4 12, 20 12, 20 18" />
                 <line x1="8" y1="14" x2="8" y2="18" />
                 <line x1="16" y1="14" x2="16" y2="18" />
                 <line x1="2" y1="18" x2="22" y2="18" />
               </svg>
             </div>
-            <div>
-              <span className="font-display text-lg tracking-tight text-[#252541]">
-                GAP<span className="text-[#7866E8]">//</span>BREAKERS
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span className="font-display" style={{ fontSize: '1.15rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#252541' }}>
+                GAP<span style={{ color: '#7866E8' }}>//</span>BREAKERS
               </span>
-              <span className="hidden sm:inline-block ml-2.5 badge-pill badge-purple text-[0.68rem]">
+              <span className="badge-pill badge-purple" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>
                 Built for teamwork
               </span>
             </div>
           </div>
 
-          {/* Links & Action */}
-          <div className="flex items-center gap-2 sm:gap-6">
+          {/* Links & Primary Action */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => setShowHow(true)}
-              className="btn-ghost text-sm font-semibold hidden md:inline-flex items-center gap-1.5"
+              className="btn-ghost"
+              style={{ fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}
             >
               <HelpCircle size={15} /> How It Works
             </button>
             <a
               href="#missions"
-              className="btn-ghost text-sm font-semibold hidden sm:inline-flex"
+              className="btn-ghost"
+              style={{ fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}
             >
               Missions
             </a>
             <button
               onClick={() => router.push('/setup')}
-              className="btn-primary text-sm py-2 px-4 sm:px-5"
+              className="btn-primary"
+              style={{ fontSize: '0.85rem', padding: '0.55rem 1.25rem', gap: '0.4rem' }}
             >
               Play Now <ArrowRight size={15} />
             </button>
@@ -76,12 +121,33 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative px-4 sm:px-8 pt-10 sm:pt-16 pb-14 max-w-6xl mx-auto text-center">
-        {/* Adorable Badge */}
+      <section
+        style={{
+          maxWidth: 1040,
+          margin: '0 auto',
+          padding: '2.5rem 1.5rem 2rem',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        {/* Track Badge */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F0EDFD] border border-[#7866E8]/20 text-[#7866E8] text-xs font-bold tracking-wide mb-6 shadow-sm"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.35rem 0.85rem',
+            borderRadius: 999,
+            background: '#F0EDFD',
+            border: '1.5px solid rgba(120, 102, 232, 0.25)',
+            color: '#7866E8',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+            marginBottom: '1.25rem',
+          }}
         >
           <Sparkles size={14} /> GDG NSUT DEVLYMPICS 2026 · BRIDGE THE GAP
         </motion.div>
@@ -90,11 +156,28 @@ export default function LandingPage() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-[#252541] tracking-tight leading-[1.08] max-w-4xl mx-auto mb-6"
+          transition={{ duration: 0.5 }}
+          className="font-display"
+          style={{
+            fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+            fontWeight: 900,
+            color: '#252541',
+            letterSpacing: '-0.025em',
+            lineHeight: 1.12,
+            maxWidth: 780,
+            margin: '0 auto 1rem',
+          }}
         >
           Oops! Reality broke.{' '}
-          <span className="text-[#7866E8] underline decoration-[#FFE28A] decoration-wavy decoration-2">
+          <span
+            style={{
+              color: '#7866E8',
+              textDecoration: 'underline',
+              textDecorationColor: '#FFE28A',
+              textDecorationStyle: 'wavy',
+              textUnderlineOffset: 6,
+            }}
+          >
             Can you fix it together?
           </span>
         </motion.h1>
@@ -103,8 +186,14 @@ export default function LandingPage() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-base sm:text-xl text-[#5C5C77] max-w-2xl mx-auto leading-relaxed mb-8"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={{
+            fontSize: '1.05rem',
+            color: '#5C5C77',
+            maxWidth: 580,
+            margin: '0 auto 1.75rem',
+            lineHeight: 1.6,
+          }}
         >
           Everyone has a different piece of the puzzle. Share clues, bridge the gaps, and save a world that really needs better communication.
         </motion.p>
@@ -113,18 +202,36 @@ export default function LandingPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1rem',
+            marginBottom: '2rem',
+            flexWrap: 'wrap',
+          }}
         >
           <button
             onClick={() => router.push('/setup')}
-            className="btn-primary w-full sm:w-auto text-base py-3.5 px-8 shadow-lg shadow-[#7866E8]/25"
+            className="btn-primary"
+            style={{
+              fontSize: '1rem',
+              padding: '0.9rem 2.25rem',
+              boxShadow: '0 6px 20px rgba(120, 102, 232, 0.25)',
+              minWidth: 220,
+            }}
           >
             LET'S FIX THIS WORLD →
           </button>
           <button
             onClick={() => setShowHow(true)}
-            className="btn-secondary w-full sm:w-auto text-base py-3.5 px-6"
+            className="btn-secondary"
+            style={{
+              fontSize: '1rem',
+              padding: '0.9rem 1.75rem',
+              minWidth: 180,
+            }}
           >
             See How It Works
           </button>
@@ -132,156 +239,377 @@ export default function LandingPage() {
 
         {/* Cute Animated World Illustration with Bloop & Speech Bubbles */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-4"
+          transition={{ duration: 0.7, delay: 0.3 }}
+          style={{ margin: '1rem auto 0', width: '100%' }}
         >
           <FloatingCityPreview />
         </motion.div>
       </section>
 
       {/* ── 3 DELIGHTFUL FEATURES ── */}
-      <section className="px-4 sm:px-8 py-16 max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs font-bold tracking-widest text-[#7866E8] uppercase">
+      <section
+        style={{
+          maxWidth: 1040,
+          margin: '0 auto',
+          padding: '3rem 1.5rem',
+          width: '100%',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <span
+            style={{
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: '#7866E8',
+              display: 'block',
+              marginBottom: 4,
+            }}
+          >
             HOW TEAMWORK WINS
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#252541] mt-2">
+          <h2 className="font-display" style={{ fontSize: '2rem', fontWeight: 900, color: '#252541' }}>
             Three simple secrets to rebuilding the world
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+            gap: '1.5rem',
+          }}
+        >
           {/* Feature 1 */}
-          <motion.div
-            whileHover={{ y: -4 }}
-            className="card-clean card-interactive p-6 sm:p-8 flex flex-col justify-between"
+          <div
+            className="card-clean card-interactive"
+            style={{
+              padding: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              minHeight: 250,
+            }}
           >
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#EBF5FE] text-[#1D6FB8] flex items-center justify-center mb-5 border border-[#55A7F7]/30">
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 16,
+                  background: '#EBF5FE',
+                  color: '#1D6FB8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1.25rem',
+                  border: '1.5px solid rgba(85, 167, 247, 0.3)',
+                }}
+              >
                 <Users size={24} />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#252541] mb-2">
+              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#252541', marginBottom: '0.5rem' }}>
                 Different Minds, One Mission
               </h3>
-              <p className="text-[#5C5C77] text-sm leading-relaxed">
+              <p style={{ fontSize: '0.88rem', color: '#5C5C77', lineHeight: 1.6 }}>
                 Everyone gets different clues. Navigator sees symbols, Decoder has the secret cipher, and Engineer controls the power switches.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#E8E5DC] flex items-center gap-2 text-xs font-semibold text-[#1D6FB8]">
-              <span className="w-2 h-2 rounded-full bg-[#55A7F7]" /> No single player can win alone
+            <div
+              style={{
+                marginTop: '1.5rem',
+                paddingTop: '1rem',
+                borderTop: '1.5px solid #E8E5DC',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#1D6FB8',
+              }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#55A7F7' }} />
+              No single player can win alone
             </div>
-          </motion.div>
+          </div>
 
           {/* Feature 2 */}
-          <motion.div
-            whileHover={{ y: -4 }}
-            className="card-clean card-interactive p-6 sm:p-8 flex flex-col justify-between"
+          <div
+            className="card-clean card-interactive"
+            style={{
+              padding: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              minHeight: 250,
+            }}
           >
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#F0EDFD] text-[#7866E8] flex items-center justify-center mb-5 border border-[#7866E8]/30">
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 16,
+                  background: '#F0EDFD',
+                  color: '#7866E8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1.25rem',
+                  border: '1.5px solid rgba(120, 102, 232, 0.3)',
+                }}
+              >
                 <Brain size={24} />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#252541] mb-2">
+              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#252541', marginBottom: '0.5rem' }}>
                 AI That Gets You
               </h3>
-              <p className="text-[#5C5C77] text-sm leading-relaxed">
-                Messages can become simpler, translated into Hindi, or turned into clear visual ASCII schematics with one click of Gemini AI.
+              <p style={{ fontSize: '0.88rem', color: '#5C5C77', lineHeight: 1.6 }}>
+                Messages can become simpler, translated into Hindi, or turned into clear visual explanations with one click of Gemini AI.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#E8E5DC] flex items-center gap-2 text-xs font-semibold text-[#7866E8]">
-              <span className="w-2 h-2 rounded-full bg-[#7866E8]" /> Converts confusion into clarity
+            <div
+              style={{
+                marginTop: '1.5rem',
+                paddingTop: '1rem',
+                borderTop: '1.5px solid #E8E5DC',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#7866E8',
+              }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7866E8' }} />
+              Converts confusion into clarity
             </div>
-          </motion.div>
+          </div>
 
           {/* Feature 3 */}
-          <motion.div
-            whileHover={{ y: -4 }}
-            className="card-clean card-interactive p-6 sm:p-8 flex flex-col justify-between"
+          <div
+            className="card-clean card-interactive"
+            style={{
+              padding: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              minHeight: 250,
+            }}
           >
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#F0FAF5] text-[#1A7A4E] flex items-center justify-center mb-5 border border-[#9BE7C4]/50">
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 16,
+                  background: '#F0FAF5',
+                  color: '#1A7A4E',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1.25rem',
+                  border: '1.5px solid rgba(155, 231, 196, 0.5)',
+                }}
+              >
                 <Layers size={24} />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#252541] mb-2">
+              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#252541', marginBottom: '0.5rem' }}>
                 Build Bridges Together
               </h3>
-              <p className="text-[#5C5C77] text-sm leading-relaxed">
+              <p style={{ fontSize: '0.88rem', color: '#5C5C77', lineHeight: 1.6 }}>
                 Successful teamwork repairs the world. Every piece of shared understanding visibly connects the floating islands across 3 stages.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#E8E5DC] flex items-center gap-2 text-xs font-semibold text-[#1A7A4E]">
-              <span className="w-2 h-2 rounded-full bg-[#9BE7C4]" /> Real-time bridge animations
+            <div
+              style={{
+                marginTop: '1.5rem',
+                paddingTop: '1rem',
+                borderTop: '1.5px solid #E8E5DC',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#1A7A4E',
+              }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#9BE7C4' }} />
+              Real-time bridge progression
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ── MISSION PREVIEW CARD ── */}
-      <section id="missions" className="px-4 sm:px-8 py-12 max-w-4xl mx-auto">
-        <div className="card-clean p-8 sm:p-12 relative overflow-hidden bg-gradient-to-br from-white via-white to-[#F0EDFD]/40 border-2 border-[#7866E8]/20 shadow-lg">
-          {/* Mascot in corner */}
-          <div className="absolute -top-3 -right-3 sm:right-6 pointer-events-none opacity-90">
-            <Bloop mood="excited" size={100} />
-          </div>
-
-          <div className="max-w-xl">
-            <span className="badge-pill badge-yellow text-xs font-bold mb-3">
+      <section
+        id="missions"
+        style={{
+          maxWidth: 960,
+          margin: '0 auto',
+          padding: '2rem 1.5rem 4rem',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #FFFFFF 0%, #FAF8FF 100%)',
+            borderRadius: 28,
+            border: '2px solid rgba(120, 102, 232, 0.25)',
+            boxShadow: '0 16px 40px rgba(37, 37, 65, 0.08)',
+            padding: '2.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '2.5rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          {/* Left: Mission Info */}
+          <div style={{ flex: '1 1 360px', minWidth: 280 }}>
+            <span
+              className="badge-pill badge-yellow"
+              style={{ fontSize: '0.72rem', fontWeight: 800, marginBottom: '0.85rem' }}
+            >
               ★ READY TO PLAY
             </span>
 
-            <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-[#252541] mb-2">
+            <h3
+              className="font-display"
+              style={{ fontSize: '1.8rem', fontWeight: 900, color: '#252541', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}
+            >
               MISSION 01: SAVE THE FLOATING CITY
             </h3>
 
-            <p className="text-[#5C5C77] text-base mb-6 leading-relaxed">
+            <p style={{ fontSize: '0.92rem', color: '#5C5C77', lineHeight: 1.6, marginBottom: '1.5rem' }}>
               “The city's energy core is having a very bad day.”
               <br />
               Synthesize 3 collectible rune symbols across the team to activate the right switches and stop the city from falling into the void.
             </p>
 
             {/* Collectible-looking Runes */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#E6F9FB] border border-[#0FB5C4]/30 text-xs font-bold text-[#0A7B85]">
-                <span className="text-base">🌀</span> Spiral (Cyan)
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 12,
+                  background: '#E6F9FB',
+                  border: '1.5px solid rgba(15, 181, 196, 0.35)',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  color: '#0A7B85',
+                }}
+              >
+                <span>🌀</span> Spiral (Cyan)
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FFF6E5] border border-[#E58A00]/30 text-xs font-bold text-[#995C00]">
-                <span className="text-base">☀️</span> Sun (Amber)
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 12,
+                  background: '#FFF6E5',
+                  border: '1.5px solid rgba(229, 138, 0, 0.35)',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  color: '#995C00',
+                }}
+              >
+                <span>☀️</span> Sun (Amber)
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F3EEFE] border border-[#8B5CF6]/30 text-xs font-bold text-[#5B34B3]">
-                <span className="text-base">〰️</span> Wave (Violet)
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: 12,
+                  background: '#F3EEFE',
+                  border: '1.5px solid rgba(139, 92, 246, 0.35)',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  color: '#5B34B3',
+                }}
+              >
+                <span>〰️</span> Wave (Violet)
               </div>
             </div>
 
-            {/* Specs & Launch */}
-            <div className="flex flex-wrap items-center gap-6 pt-2">
+            {/* CTA & Quick Specs */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
               <button
                 onClick={() => router.push('/setup')}
-                className="btn-primary text-base py-3 px-8 shadow-md"
+                className="btn-primary"
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.75rem', gap: '0.5rem' }}
               >
                 <Play size={16} fill="currentColor" /> Start the Adventure
               </button>
 
-              <div className="flex items-center gap-4 text-xs font-bold text-[#74748A]">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontWeight: 800, color: '#74748A' }}>
                 <div>👥 3 Roles</div>
                 <div>⏱️ 3 Min Countdown</div>
                 <div>⭐ Friendly Co-op</div>
               </div>
             </div>
           </div>
+
+          {/* Right: Bloop in Spotlight Pedestal (NO TEXT COLLISION!) */}
+          <div
+            style={{
+              width: 170,
+              height: 170,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, #F0EDFD 0%, #FAF9F6 100%)',
+              border: '2px solid rgba(120, 102, 232, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px rgba(120, 102, 232, 0.12)',
+              flexShrink: 0,
+              margin: '0 auto',
+            }}
+          >
+            <Bloop mood="excited" size={110} />
+          </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-[#E8E5DC] py-10 px-4 text-center text-xs text-[#74748A] bg-white/50">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Bloop mood="proud" size={32} animate={false} />
-            <span className="font-bold text-[#252541]">GAP//BREAKERS</span> — Rebuilding reality together.
+      <footer
+        style={{
+          borderTop: '1.5px solid #E8E5DC',
+          padding: '2rem 1.5rem',
+          textAlign: 'center',
+          fontSize: '0.78rem',
+          color: '#74748A',
+          background: 'rgba(255, 255, 255, 0.6)',
+          marginTop: 'auto',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1040,
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Bloop mood="proud" size={28} animate={false} />
+            <span style={{ fontWeight: 800, color: '#252541' }}>GAP//BREAKERS</span> — Rebuilding reality together.
           </div>
           <div>
-            Built with <Heart size={13} className="inline text-[#FF9EAB] fill-[#FF9EAB]" /> for GDG NSUT Devlympics Shunya 2026.
+            Built with <Heart size={13} style={{ display: 'inline', color: '#FF9EAB', fill: '#FF9EAB' }} /> for GDG NSUT Devlympics Shunya 2026.
           </div>
         </div>
       </footer>
@@ -294,7 +622,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowHow(false)}
-            className="fixed inset-0 z-50 bg-[#252541]/40 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-[#252541]/45 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, y: 15 }}
@@ -305,47 +633,48 @@ export default function LandingPage() {
             >
               <button
                 onClick={() => setShowHow(false)}
-                className="absolute top-5 right-5 text-[#8E8EA8] hover:text-[#252541] p-1.5 rounded-full hover:bg-[#F4F2EC]"
+                className="btn-ghost"
+                style={{ position: 'absolute', top: 16, right: 16, padding: 6, borderRadius: 10 }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
-              <div className="flex items-center gap-3 mb-6">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
                 <Bloop mood="thinking" size={48} />
                 <div>
-                  <h3 className="font-display text-xl font-bold text-[#252541]">
+                  <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 900, color: '#252541' }}>
                     How to play GAP//BREAKERS
                   </h3>
-                  <p className="text-xs text-[#74748A]">Quick guide: 3 brains, 1 broken bridge.</p>
+                  <p style={{ fontSize: '0.78rem', color: '#74748A' }}>Quick guide: 3 brains, 1 broken bridge.</p>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-8">
-                <div className="p-3.5 rounded-2xl bg-[#EBF5FE] border border-[#55A7F7]/20 flex items-start gap-3">
-                  <Compass className="text-[#1D6FB8] shrink-0 mt-0.5" size={20} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.75rem' }}>
+                <div style={{ padding: '0.85rem 1rem', borderRadius: 16, background: '#EBF5FE', border: '1.5px solid rgba(85, 167, 247, 0.3)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                  <Compass style={{ color: '#1D6FB8', flexShrink: 0, marginTop: 2 }} size={20} />
                   <div>
-                    <h4 className="font-bold text-sm text-[#1D6FB8]">The Navigator</h4>
-                    <p className="text-xs text-[#5C5C77]">
+                    <h4 style={{ fontWeight: 800, fontSize: '0.88rem', color: '#1D6FB8' }}>The Navigator</h4>
+                    <p style={{ fontSize: '0.78rem', color: '#5C5C77', marginTop: 2, lineHeight: 1.5 }}>
                       Sees the ancient route map. Knows the correct sequence of symbols (Spiral → Sun → Wave).
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#F0EDFD] border border-[#7866E8]/20 flex items-start gap-3">
-                  <FileCode className="text-[#7866E8] shrink-0 mt-0.5" size={20} />
+                <div style={{ padding: '0.85rem 1rem', borderRadius: 16, background: '#F0EDFD', border: '1.5px solid rgba(120, 102, 232, 0.3)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                  <FileCode style={{ color: '#7866E8', flexShrink: 0, marginTop: 2 }} size={20} />
                   <div>
-                    <h4 className="font-bold text-sm text-[#7866E8]">The Decoder</h4>
-                    <p className="text-xs text-[#5C5C77]">
+                    <h4 style={{ fontWeight: 800, fontSize: '0.88rem', color: '#7866E8' }}>The Decoder</h4>
+                    <p style={{ fontSize: '0.78rem', color: '#5C5C77', marginTop: 2, lineHeight: 1.5 }}>
                       Has the rune table cipher. Knows which symbol maps to which color (Spiral = Cyan, Sun = Amber, Wave = Violet).
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#FFF6E5] border border-[#E58A00]/20 flex items-start gap-3">
-                  <Wrench className="text-[#995C00] shrink-0 mt-0.5" size={20} />
+                <div style={{ padding: '0.85rem 1rem', borderRadius: 16, background: '#FFF6E5', border: '1.5px solid rgba(229, 138, 0, 0.3)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                  <Wrench style={{ color: '#995C00', flexShrink: 0, marginTop: 2 }} size={20} />
                   <div>
-                    <h4 className="font-bold text-sm text-[#995C00]">The Engineer</h4>
-                    <p className="text-xs text-[#5C5C77]">
+                    <h4 style={{ fontWeight: 800, fontSize: '0.88rem', color: '#995C00' }}>The Engineer</h4>
+                    <p style={{ fontSize: '0.78rem', color: '#5C5C77', marginTop: 2, lineHeight: 1.5 }}>
                       Operates the 3 colored switches. Needs the others to communicate the sequence so they can flip Cyan, then Amber, then Violet!
                     </p>
                   </div>
@@ -357,7 +686,8 @@ export default function LandingPage() {
                   setShowHow(false);
                   router.push('/setup');
                 }}
-                className="btn-primary w-full py-3.5 text-sm"
+                className="btn-primary"
+                style={{ width: '100%', padding: '0.85rem', fontSize: '0.92rem' }}
               >
                 Got It! Let's Play →
               </button>
