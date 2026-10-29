@@ -9,7 +9,7 @@
 
 ---
 
-## 🌟 The Big Idea
+## The Big Idea
 
 **GAP//BREAKERS** turns the hackathon theme (*"Which two sides should be able to connect, and what could exist between them to make that possible?"*) into a joyful, asymmetric cooperative browser game.
 
@@ -20,7 +20,7 @@ In our broken celestial world, islands have drifted apart because people stopped
 
 ---
 
-## 🚀 Quick Start (Play in 30 Seconds)
+## Quick Start (Play in 30 Seconds)
 
 ```bash
 # 1. Install dependencies
@@ -32,13 +32,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 🧪 Run Verified Tests
+### Run Verified Tests
 ```bash
 npm test
 ```
 *33 / 33 Unit Tests Passing (Deterministic state machines, bridge progression, puzzle validation, and scoring).*
 
-### 📦 Production Build
+### Production Build
 ```bash
 npm run build
 npm start
@@ -47,13 +47,13 @@ npm start
 
 ---
 
-## 🎮 How to Play (The 3 Asymmetric Perspectives)
+## How to Play (The 3 Asymmetric Perspectives)
 
 | Role | Exclusive Clue | Responsibility |
 | :--- | :--- | :--- |
-| 🧭 **Navigator** | Star Chart Route Map | Holds the true order of ancient runes: `1st Spiral → 2nd Sun → 3rd Wave`. |
-| 📜 **Decoder** | Ancient Rune Cipher | Translates glyphs to energy colors: `Spiral = Cyan`, `Sun = Amber`, `Wave = Violet`. |
-| 🔧 **Engineer** | Power Console Switches | Flips the physical switches: `CYAN → AMBER → VIOLET`. |
+| **Navigator** | Star Chart Route Map | Holds the true order of ancient runes: `1st Spiral → 2nd Sun → 3rd Wave`. |
+| **Decoder** | Ancient Rune Cipher | Translates glyphs to energy colors: `Spiral = Cyan`, `Sun = Amber`, `Wave = Violet`. |
+| **Engineer** | Power Console Switches | Flips the physical switches: `CYAN → AMBER → VIOLET`. |
 
 ---
 
@@ -71,7 +71,7 @@ GAP//BREAKERS features an original, **100% procedural sound synthesizer** built 
 
 ---
 
-## ⚖️ Hackathon Evaluator Quick-Test Guide
+## Hackathon Evaluator Quick-Test Guide
 
 Short on time? We built dedicated testing tools specifically for judges:
 
@@ -82,7 +82,7 @@ Short on time? We built dedicated testing tools specifically for judges:
 
 ---
 
-## 🤖 Gemini AI Transformation Engine
+## Gemini AI Transformation Engine
 
 Powered by Google's **Gemini 1.5 Flash** (`/api/ai/transform`):
 - **Translate**: Converts complex instructions between English and Hindi.
@@ -92,7 +92,7 @@ Powered by Google's **Gemini 1.5 Flash** (`/api/ai/transform`):
 
 ---
 
-## 📊 Transparent Collaboration Score (No Fabricated Stats)
+## Transparent Collaboration Score (No Fabricated Stats)
 
 At the end of each mission, players receive a transparent **Collaboration Bridge Score** calculated strictly from observable events:
 
@@ -103,7 +103,7 @@ $$\text{Score} = \text{Completion (40)} + \text{Bridge (30)} + \text{Collaborati
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 gap-breakers/
@@ -135,7 +135,7 @@ gap-breakers/
 
 ---
 
-## 🎨 Visual Design System & Identity
+## Visual Design System & Identity
 
 - **Primary Purple (`#7866E8`)**: Core brand actions & Decoder perspective.
 - **Electric Blue (`#55A7F7`)**: Secondary actions & Navigator perspective.
@@ -146,7 +146,7 @@ gap-breakers/
 
 ---
 
-## 📜 Devlympics Shunya 2026 Alignment
+## Devlympics Shunya 2026 Alignment
 
 | Criteria | How GAP//BREAKERS Delivers |
 | :--- | :--- |
@@ -156,5 +156,3 @@ gap-breakers/
 | **Completeness & Polish** | Full game loop from landing to results, 0 unstyled classes, 0 build errors, honest telemetry. |
 
 ---
-
-*Built with ❤️ for Devlympics — Shunya 2026.*
